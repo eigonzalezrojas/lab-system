@@ -33,9 +33,11 @@ class UserAccount(UserMixin, db.Model):
     def is_admin(self):
         return self.role.name == 'administrador'
 
+    def get_id(self):
+        return self.rut
+
     def __repr__(self):
         return f'<UserAccount {self.email}>'
-
 
 class Project(db.Model):
     __tablename__ = 'projects'

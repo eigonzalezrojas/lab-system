@@ -3,14 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom CSS if needed */
+    </style>
 </head>
 <body class="bg-gray-100">
-    <div class="min-h-screen flex items-center justify-center">
-        <div class="max-w-md w-full bg-white p-8 rounded-lg shadow-lg">
-            <h2 class="text-2xl font-bold mb-6 text-center">Dashboard</h2>
-            <p class="text-center">Welcome to the admin dashboard!</p>
+    <div class="min-h-screen flex">
+        <!-- Sidebar -->
+        <div class="bg-blue-900 text-blue-100 w-64 space-y-6 py-7 px-2">
+            <div class="text-white text-2xl flex items-center space-x-2 px-4">
+                <span class="text-3xl font-extrabold">Admin</span>
+                <span>Dashboard</span>
+            </div>
+            <nav>
+                <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Home</a>
+                <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Settings</a>
+                <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Profile</a>
+                <a href="{{ url_for('logout') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Logout</a>
+            </nav>
+        </div>
+        <!-- Content -->
+        <div class="flex-1 p-10 text-2xl font-bold">
+            Welcome to the Admin Dashboard!
         </div>
     </div>
 </body>
