@@ -46,7 +46,7 @@ def login():
             login_user(user)
             return redirect(url_for('dashboard'))
         else:
-            flash('Invalid RUT or Password', 'danger')
+            flash('Rut y/o contraseña inválida', 'danger')
     return render_template('login.html')
 
 @app.route('/forgot_password', methods=['GET', 'POST'])
@@ -61,17 +61,23 @@ def forgot_password():
             subject = "Contraseña temporal"
             body = f"Su contraseña temporal es: {temporary_password}"
             if send_email(subject, user.email, body):
-                flash('A temporary password has been sent to your email.', 'success')
+                flash('Un contraseña fue enviada a su correo registrado', 'success')
             else:
-                flash('There was an error sending the email. Please try again later.', 'danger')
+                flash('Hubo un error en el envío del correo', 'danger')
         else:
-            flash('RUT not found in the system.', 'danger')
+            flash('El Rut ingresado no está registrado', 'danger')
     return render_template('forgot_password.html')
 
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('admin_dashboard.html')
+    if current_user.role.name == 'administrador':
+        return render_template('admin_dashboard.html')
+    elif current_user.role.name == 'operador':
+        return render_template('operador_dashboard.html')
+    else:
+        flash('No tiene permisos para acceder a esta área.', 'danger')
+        return redirect(url_for('login'))
 
 @app.route('/logout')
 @login_required
