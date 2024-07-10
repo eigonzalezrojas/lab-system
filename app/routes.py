@@ -58,8 +58,8 @@ def forgot_password():
             temporary_password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
             user.set_password(temporary_password)
             db.session.commit()
-            subject = "Temporary Password"
-            body = f"Your temporary password is: {temporary_password}"
+            subject = "Contraseña temporal"
+            body = f"Su contraseña temporal es: {temporary_password}"
             if send_email(subject, user.email, body):
                 flash('A temporary password has been sent to your email.', 'success')
             else:

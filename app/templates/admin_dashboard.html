@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Custom CSS if needed */
     </style>
@@ -12,16 +13,21 @@
 <body class="bg-gray-100">
     <div class="min-h-screen flex">
         <!-- Sidebar -->
-        <div class="bg-blue-900 text-blue-100 w-64 space-y-6 py-7 px-2">
+        <div class="bg-blue-900 text-blue-100 w-64 space-y-6 py-7 px-2 relative">
             <div class="text-white text-2xl flex items-center space-x-2 px-4">
                 <span class="text-3xl font-extrabold">Admin</span>
                 <span>Dashboard</span>
             </div>
-            <nav>
-                <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Home</a>
-                <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Settings</a>
-                <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Profile</a>
-                <a href="{{ url_for('logout') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Logout</a>
+            <div class="px-4">
+                <p class="font-bold">{{ current_user.first_name }} {{ current_user.last_name }}</p>
+            </div>
+            <nav class="flex flex-col space-y-2 mt-4">
+                <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Inicio</a>
+                <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Solicitudes</a>
+                <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Facturas</a>
+                <div class="nav-footer mt-auto">
+                    <a href="{{ url_for('logout') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Logout</a>
+                </div>
             </nav>
         </div>
         <!-- Content -->
