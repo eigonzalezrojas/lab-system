@@ -54,6 +54,25 @@
         </div>
         <!-- Content -->
         <div class="flex-1 p-10 text-lg">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="mb-4">
+                        {% for category, message in messages %}
+                            <div class="text-white px-6 py-4 border-0 rounded relative mb-4 bg-{{ 'red-500' if category == 'danger' else 'green-500' }}">
+                                <span class="text-xl inline-block mr-5 align-middle">
+                                    <i class="fas fa-bell"></i>
+                                </span>
+                                <span class="inline-block align-middle mr-8">
+                                    <b class="capitalize">{{ category }}!</b> {{ message }}
+                                </span>
+                                <button class="absolute bg-transparent text-2xl font-semibold leading-none right-0 top-0 mt-1 mr-2 outline-none focus:outline-none" onclick="this.parentElement.remove()">
+                                    <span>×</span>
+                                </button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
             {% if section == 'usuarios' %}
                 <div class="flex justify-between items-center mb-6">
                     <h1 class="text-2xl">Usuarios</h1>
@@ -139,7 +158,7 @@
                 </div>
                 <div class="flex justify-end">
                     <button type="button" id="closeModal" class="bg-gray-500 text-white py-2 px-4 rounded-lg mr-2">Cancelar</button>
-                    <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded-lg">Crear</button>
+                    <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded-lg" onclick="closeModalOnSubmit()">Crear</button>
                 </div>
             </form>
         </div>
@@ -153,6 +172,21 @@
         document.getElementById('closeModal').addEventListener('click', function() {
             document.getElementById('modal').classList.add('hidden');
         });
+
+        function closeModalOnSubmit() {
+            document.getElementById('modal').classList.add('hidden');
+            return true;
+        }
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                document.addEventListener('DOMContentLoaded', function() {
+                    if ('{{ category }}' === 'danger') {
+                        document.getElementById('openModal').click();
+                    }
+                });
+            {% endif %}
+        {% endwith %}
     </script>
 </body>
 </html>

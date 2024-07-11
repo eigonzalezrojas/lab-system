@@ -12,6 +12,7 @@ import os
 
 load_dotenv()
 
+
 def send_email(subject, recipient, body):
     sender_email = os.getenv('EMAIL_USER')
     sender_password = os.getenv('EMAIL_PASS')
@@ -35,6 +36,7 @@ def send_email(subject, recipient, body):
         print(f"Error sending email: {e}")
         return False
 
+
 @app.route('/')
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -44,16 +46,14 @@ def login():
         user = UserAccount.query.filter_by(rut=rut).first()
         if user and user.check_password(password):
             login_user(user)
-            if user.role.name == 'administrador':
+            if user.is_admin():
                 return redirect(url_for('admin_dashboard'))
-            elif user.role.name == 'operador':
-                return redirect(url_for('operador_dashboard'))
             else:
-                flash('Rol no reconocido', 'danger')
-                return redirect(url_for('login'))
+                return redirect(url_for('operador_dashboard'))
         else:
             flash('Rut y/o contraseña inválida', 'danger')
     return render_template('login.html')
+
 
 @app.route('/forgot_password', methods=['GET', 'POST'])
 def forgot_password():
@@ -74,12 +74,14 @@ def forgot_password():
             flash('El Rut ingresado no está registrado', 'danger')
     return render_template('forgot_password.html')
 
+
 @app.route('/usuarios')
 @login_required
 def usuarios():
     usuarios = UserAccount.query.all()
     roles = UserRole.query.all()
     return render_template('admin_dashboard.html', section='usuarios', usuarios=usuarios, roles=roles)
+
 
 @app.route('/crear_usuario', methods=['POST'])
 @login_required
@@ -116,15 +118,18 @@ def crear_usuario():
     flash('Usuario creado exitosamente y contraseña enviada por correo.', 'success')
     return redirect(url_for('usuarios'))
 
+
 @app.route('/admin_dashboard')
 @login_required
 def admin_dashboard():
     return render_template('admin_dashboard.html')
 
+
 @app.route('/operador_dashboard')
 @login_required
 def operador_dashboard():
     return render_template('operador_dashboard.html')
+
 
 @app.route('/logout')
 @login_required
