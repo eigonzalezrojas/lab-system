@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import login_user, current_user, login_required, logout_user
 from app import app, db
-from app.models import UserAccount
+from app.models import UserAccount, UserRole
 import random
 import string
 import smtplib
@@ -44,7 +44,13 @@ def login():
         user = UserAccount.query.filter_by(rut=rut).first()
         if user and user.check_password(password):
             login_user(user)
-            return redirect(url_for('dashboard'))
+            if user.role.name == 'administrador':
+                return redirect(url_for('admin_dashboard'))
+            elif user.role.name == 'operador':
+                return redirect(url_for('operador_dashboard'))
+            else:
+                flash('Rol no reconocido', 'danger')
+                return redirect(url_for('login'))
         else:
             flash('Rut y/o contraseña inválida', 'danger')
     return render_template('login.html')
@@ -61,23 +67,64 @@ def forgot_password():
             subject = "Contraseña temporal"
             body = f"Su contraseña temporal es: {temporary_password}"
             if send_email(subject, user.email, body):
-                flash('Un contraseña fue enviada a su correo registrado', 'success')
+                flash('Una contraseña fue enviada a su correo registrado', 'success')
             else:
                 flash('Hubo un error en el envío del correo', 'danger')
         else:
             flash('El Rut ingresado no está registrado', 'danger')
     return render_template('forgot_password.html')
 
-@app.route('/dashboard')
+@app.route('/usuarios')
 @login_required
-def dashboard():
-    if current_user.role.name == 'administrador':
-        return render_template('admin_dashboard.html')
-    elif current_user.role.name == 'operador':
-        return render_template('operador_dashboard.html')
-    else:
-        flash('No tiene permisos para acceder a esta área.', 'danger')
-        return redirect(url_for('login'))
+def usuarios():
+    usuarios = UserAccount.query.all()
+    roles = UserRole.query.all()
+    return render_template('admin_dashboard.html', section='usuarios', usuarios=usuarios, roles=roles)
+
+@app.route('/crear_usuario', methods=['POST'])
+@login_required
+def crear_usuario():
+    rut = request.form['rut']
+    first_name = request.form['first_name']
+    last_name = request.form['last_name']
+    phone = request.form['phone']
+    email = request.form['email']
+    role_id = request.form['role_id']
+
+    user = UserAccount.query.filter_by(rut=rut).first()
+    if user:
+        flash('El usuario con este RUT ya está registrado.', 'danger')
+        return redirect(url_for('usuarios'))
+
+    temporary_password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+    new_user = UserAccount(
+        rut=rut,
+        first_name=first_name,
+        last_name=last_name,
+        phone=phone,
+        email=email,
+        role_id=role_id
+    )
+    new_user.set_password(temporary_password)
+    db.session.add(new_user)
+    db.session.commit()
+
+    subject = "Bienvenido al sistema"
+    body = f"Su contraseña temporal es: {temporary_password}"
+    send_email(subject, email, body)
+
+    flash('Usuario creado exitosamente y contraseña enviada por correo.', 'success')
+    return redirect(url_for('usuarios'))
+
+@app.route('/admin_dashboard')
+@login_required
+def admin_dashboard():
+    return render_template('admin_dashboard.html')
+
+@app.route('/operador_dashboard')
+@login_required
+def operador_dashboard():
+    return render_template('operador_dashboard.html')
 
 @app.route('/logout')
 @login_required
