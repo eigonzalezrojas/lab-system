@@ -225,13 +225,6 @@
             }
             document.getElementById('confirmModal').classList.add('hidden');
         });
-
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                document.addEventListener('DOMContentLoaded', function() {
-                });
-            {% endif %}
-        {% endwith %}
     </script>
 </body>
 </html>

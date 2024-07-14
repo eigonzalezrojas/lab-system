@@ -119,19 +119,19 @@ def crear_usuario():
     return redirect(url_for('usuarios'))
 
 
-@app.route('/eliminar_usuario', methods=['POST'])
+@app.route('/eliminar_usuario/<rut>', methods=['DELETE'])
 @login_required
-def eliminar_usuario():
-    data = request.get_json()
-    rut = data.get('rut')
-
+def eliminar_usuario(rut):
     user = UserAccount.query.filter_by(rut=rut).first()
     if user:
         db.session.delete(user)
         db.session.commit()
-        return jsonify({'message': 'Usuario eliminado exitosamente.'}), 200
+        flash('Usuario eliminado exitosamente.', 'success')
+        return jsonify(success=True)
     else:
-        return jsonify({'message': 'Usuario no encontrado.'}), 404
+        flash('Usuario no encontrado.', 'danger')
+        return jsonify(success=False)
+
 
 
 @app.route('/admin_dashboard')
