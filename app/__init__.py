@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
+from flask_wtf import CSRFProtect
 from dotenv import load_dotenv
 import os
 
@@ -15,6 +16,7 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login = LoginManager(app)
+csrf = CSRFProtect(app)
 
 @login.user_loader
 def load_user(user_rut):

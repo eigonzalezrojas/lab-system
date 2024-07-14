@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_user, current_user, login_required, logout_user
 from app import app, db
 from app.models import UserAccount, UserRole
@@ -67,7 +67,7 @@ def forgot_password():
             subject = "Contraseña temporal"
             body = f"Su contraseña temporal es: {temporary_password}"
             if send_email(subject, user.email, body):
-                flash('Una contraseña fue enviada a su correo registrado', 'success')
+                flash('Un contraseña fue enviada a su correo registrado', 'success')
             else:
                 flash('Hubo un error en el envío del correo', 'danger')
         else:
@@ -117,6 +117,21 @@ def crear_usuario():
 
     flash('Usuario creado exitosamente y contraseña enviada por correo.', 'success')
     return redirect(url_for('usuarios'))
+
+
+@app.route('/eliminar_usuario', methods=['POST'])
+@login_required
+def eliminar_usuario():
+    data = request.get_json()
+    rut = data.get('rut')
+
+    user = UserAccount.query.filter_by(rut=rut).first()
+    if user:
+        db.session.delete(user)
+        db.session.commit()
+        return jsonify({'message': 'Usuario eliminado exitosamente.'}), 200
+    else:
+        return jsonify({'message': 'Usuario no encontrado.'}), 404
 
 
 @app.route('/admin_dashboard')
