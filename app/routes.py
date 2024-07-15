@@ -119,6 +119,26 @@ def crear_usuario():
     return redirect(url_for('usuarios'))
 
 
+@app.route('/editar_usuario', methods=['POST'])
+@login_required
+def editar_usuario():
+    original_rut = request.form['original_rut']
+    user = UserAccount.query.filter_by(rut=original_rut).first()
+    if user:
+        user.rut = request.form['rut']
+        user.first_name = request.form['first_name']
+        user.last_name = request.form['last_name']
+        user.phone = request.form['phone']
+        user.email = request.form['email']
+        user.role_id = request.form['role_id']
+
+        db.session.commit()
+        flash('Usuario actualizado exitosamente.', 'success')
+    else:
+        flash('Usuario no encontrado.', 'danger')
+    return redirect(url_for('usuarios'))
+
+
 @app.route('/eliminar_usuario/<rut>', methods=['DELETE'])
 @login_required
 def eliminar_usuario(rut):
