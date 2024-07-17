@@ -29,7 +29,7 @@
                     </div>
                 {% endif %}
             {% endwith %}
-            <form method="POST" action="{{ url_for('login') }}">
+            <form method="POST" action="{{ url_for('auth.login') }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="mb-4">
                     <label for="rut" class="block text-gray-700">RUT</label>
@@ -42,7 +42,7 @@
                 <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg">Login</button>
             </form>
             <div class="mt-4 text-center">
-                <a href="{{ url_for('forgot_password') }}" class="text-blue-500">Forgot Password?</a>
+                <a href="{{ url_for('auth.forgot_password') }}" class="text-blue-500">Forgot Password?</a>
             </div>
         </div>
     </div>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Operador Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom CSS if needed */
@@ -26,7 +26,7 @@
                 <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Facturas</a>
                 <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Observaciones</a>
                 <div class="nav-footer mt-auto">
-                    <a href="{{ url_for('logout') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Logout</a>
+                    <a href="{{ url_for('auth.logout') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Logout</a>
                 </div>
             </nav>
         </div>

@@ -1,9 +1,16 @@
 import os
-from app import app, db
-from app.models import UserAccount, UserRole
+import sys
 from dotenv import load_dotenv
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'src')))
+
+from src import create_app, db
+from src.models.userAccount import UserAccount
+from src.models.userRole import UserRole
+
 load_dotenv()
+
+app = create_app()
 
 with app.app_context():
     try:

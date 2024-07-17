@@ -48,13 +48,13 @@
                 <p class="font-bold">{{ current_user.first_name }} {{ current_user.last_name }}</p>
             </div>
             <nav class="flex flex-col space-y-2 mt-4">
-                <a href="{{ url_for('admin_dashboard') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Inicio</a>
-                <a href="{{ url_for('usuarios') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Usuarios</a>
-                <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Proyectos</a>
-                <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Máquinas</a>
-                <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Solventes</a>
+                <a href="{{ url_for('main.admin_dashboard') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Inicio</a>
+                <a href="{{ url_for('user.usuarios') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Usuarios</a>
+                <a href="{{ url_for('main.admin_dashboard', section='proyectos') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Proyectos</a>
+                <a href="{{ url_for('main.admin_dashboard', section='maquinas') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Máquinas</a>
+                <a href="{{ url_for('main.admin_dashboard', section='solventes') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Solventes</a>
                 <div class="nav-footer mt-auto">
-                    <a href="{{ url_for('logout') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Logout</a>
+                    <a href="{{ url_for('auth.logout') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Logout</a>
                 </div>
             </nav>
         </div>
@@ -123,6 +123,15 @@
                         {% endfor %}
                     </tbody>
                 </table>
+            {% elif section == 'proyectos' %}
+                <h1 class="text-2xl">Proyectos</h1>
+                <!-- Aquí puedes agregar el contenido específico para la sección de Proyectos -->
+            {% elif section == 'maquinas' %}
+                <h1 class="text-2xl">Máquinas</h1>
+                <!-- Aquí puedes agregar el contenido específico para la sección de Máquinas -->
+            {% elif section == 'solventes' %}
+                <h1 class="text-2xl">Solventes</h1>
+                <!-- Aquí puedes agregar el contenido específico para la sección de Solventes -->
             {% else %}
                 <h1>Welcome to the Admin Dashboard!</h1>
             {% endif %}
@@ -133,7 +142,7 @@
     <div id="modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
         <div class="bg-white p-6 rounded-lg shadow-lg w-1/2">
             <h2 class="text-2xl mb-4">Crear Usuario</h2>
-            <form method="POST" action="{{ url_for('crear_usuario') }}" onsubmit="return closeModalOnSubmit()">
+            <form method="POST" action="{{ url_for('user.crear_usuario') }}" onsubmit="return closeModalOnSubmit()">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="mb-4">
                     <label for="rut" class="block text-gray-700">RUT</label>
@@ -187,7 +196,7 @@
     <div id="editModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
         <div class="bg-white p-6 rounded-lg shadow-lg w-1/2">
             <h2 class="text-2xl mb-4">Editar Usuario</h2>
-            <form id="editUserForm" method="POST" action="{{ url_for('editar_usuario') }}" onsubmit="return closeEditModalOnSubmit()">
+            <form id="editUserForm" method="POST" action="{{ url_for('user.editar_usuario') }}" onsubmit="return closeEditModalOnSubmit()">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="original_rut" id="edit_original_rut">
                 <div class="mb-4">
