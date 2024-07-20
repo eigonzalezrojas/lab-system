@@ -5,36 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .btn {
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            width: 32px;
-            height: 32px;
-            border-radius: 4px;
-            color: white;
-        }
-        .btn-edit {
-            background-color: #3b82f6; /* Tailwind blue-500 */
-        }
-        .btn-edit:hover {
-            background-color: #2563eb; /* Tailwind blue-600 */
-        }
-        .btn-delete {
-            background-color: #ef4444; /* Tailwind red-500 */
-        }
-        .btn-delete:hover {
-            background-color: #dc2626; /* Tailwind red-600 */
-        }
-        table th, table td {
-            text-align: center;
-            padding: 10px;
-        }
-        table th {
-            background-color: #f8f8f8;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
 </head>
 <body class="bg-gray-100">
     <div class="min-h-screen flex">
@@ -50,7 +21,7 @@
             <nav class="flex flex-col space-y-2 mt-4">
                 <a href="{{ url_for('main.admin_dashboard') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Inicio</a>
                 <a href="{{ url_for('user.usuarios') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Usuarios</a>
-                <a href="{{ url_for('main.admin_dashboard', section='proyectos') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Proyectos</a>
+                <a href="{{ url_for('project.proyectos') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Proyectos</a>
                 <a href="{{ url_for('main.admin_dashboard', section='maquinas') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Máquinas</a>
                 <a href="{{ url_for('main.admin_dashboard', section='solventes') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Solventes</a>
                 <div class="nav-footer mt-auto">
@@ -124,8 +95,47 @@
                     </tbody>
                 </table>
             {% elif section == 'proyectos' %}
-                <h1 class="text-2xl">Proyectos</h1>
-                <!-- Aquí puedes agregar el contenido específico para la sección de Proyectos -->
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-2xl">Proyectos</h1>
+                    <button id="openProjectModal" class="bg-green-500 text-white py-2 px-4 rounded-lg">Crear</button>
+                </div>
+                <table class="min-w-full bg-white">
+                    <thead>
+                        <tr>
+                            <th class="py-2 px-4 bg-gray-200">ID</th>
+                            <th class="py-2 px-4 bg-gray-200">Nombre</th>
+                            <th class="py-2 px-4 bg-gray-200">Fondo</th>
+                            <th class="py-2 px-4 bg-gray-200">Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for proyecto in proyectos %}
+                            <tr>
+                                <td class="border px-4 py-2">{{ proyecto.id }}</td>
+                                <td class="border px-4 py-2">{{ proyecto.name }}</td>
+                                <td class="border px-4 py-2">{{ proyecto.fondo }}</td>
+                                <td class="border px-4 py-2">
+                                    <div class="flex space-x-2">
+                                        <a href="#" class="btn btn-edit-project" data-id="{{ proyecto.id }}" data-name="{{ proyecto.name }}" data-fondo="{{ proyecto.fondo }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path d="M17.414 2.586a2 2 0 00-2.828 0L13 4.172 15.828 7l1.586-1.586a2 2 0 000-2.828zM12 5l3 3-9 9H3v-3l9-9z"/>
+                                            </svg>
+                                        </a>
+                                        <a href="#" class="btn btn-delete-project" data-id="{{ proyecto.id }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M8 4a1 1 0 011-1h2a1 1 0 011 1v1h5a1 1 0 110 2h-1v9a2 2 0 01-2 2H6a2 2 0 01-2-2V7H3a1 1 0 110-2h5V4zm1 3a1 1 0 00-1 1v7a1 1 0 102 0V8a1 1 0 00-1-1zm4 1a1 1 0 10-2 0v7a1 1 0 102 0V8z" clip-rule="evenodd"/>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td class="border px-4 py-2 text-center" colspan="4">No hay proyectos registrados.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             {% elif section == 'maquinas' %}
                 <h1 class="text-2xl">Máquinas</h1>
                 <!-- Aquí puedes agregar el contenido específico para la sección de Máquinas -->
@@ -138,7 +148,7 @@
         </div>
     </div>
 
-    <!-- Create Modal -->
+    <!-- Create User Modal -->
     <div id="modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
         <div class="bg-white p-6 rounded-lg shadow-lg w-1/2">
             <h2 class="text-2xl mb-4">Crear Usuario</h2>
@@ -180,7 +190,7 @@
         </div>
     </div>
 
-    <!-- Delete Modal -->
+    <!-- Delete User Modal -->
     <div id="confirmModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
         <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
             <h2 class="text-2xl mb-4">Confirmación</h2>
@@ -192,7 +202,7 @@
         </div>
     </div>
 
-    <!-- Edit Modal -->
+    <!-- Edit User Modal -->
     <div id="editModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
         <div class="bg-white p-6 rounded-lg shadow-lg w-1/2">
             <h2 class="text-2xl mb-4">Editar Usuario</h2>
@@ -234,90 +244,50 @@
             </form>
         </div>
     </div>
+    <!-- Create Project Modal -->
+    <div id="projectModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-1/2">
+            <h2 class="text-2xl mb-4">Crear Proyecto</h2>
+            <form method="POST" action="{{ url_for('project.crear_proyecto') }}" onsubmit="return closeModalOnSubmit('projectModal')">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="mb-4">
+                    <label for="project_name" class="block text-gray-700">Nombre</label>
+                    <input type="text" name="name" id="project_name" class="w-full px-3 py-2 border rounded-lg" required>
+                </div>
+                <div class="mb-4">
+                    <label for="project_fondo" class="block text-gray-700">Fondo</label>
+                    <input type="text" name="fondo" id="project_fondo" class="w-full px-3 py-2 border rounded-lg" required>
+                </div>
+                <div class="flex justify-end">
+                    <button type="button" id="closeProjectModal" class="bg-gray-500 text-white py-2 px-4 rounded-lg mr-2">Cancelar</button>
+                    <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded-lg">Crear</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-
-    <script>
-        document.getElementById('openModal').addEventListener('click', function() {
-            document.getElementById('modal').classList.remove('hidden');
-        });
-
-        document.getElementById('closeModal').addEventListener('click', function() {
-            document.getElementById('modal').classList.add('hidden');
-        });
-
-        function closeModalOnSubmit() {
-            document.getElementById('modal').classList.add('hidden');
-            return true;
-        }
-
-        // Handle Edit Confirmation
-        let userToEdit = null;
-        document.querySelectorAll('.btn-edit').forEach(button => {
-            button.addEventListener('click', function() {
-                userToEdit = {
-                        rut: this.closest('tr').children[0].textContent.trim(),
-                        first_name: this.closest('tr').children[1].textContent.trim(),
-                        last_name: this.closest('tr').children[2].textContent.trim(),
-                        phone: this.closest('tr').children[3].textContent.trim(),
-                        email: this.closest('tr').children[4].textContent.trim(),
-                        role_id: this.closest('tr').children[5].getAttribute('data-role-id')
-                    };
-
-                    document.getElementById('edit_original_rut').value = userToEdit.rut;
-                    document.getElementById('edit_rut').value = userToEdit.rut;
-                    document.getElementById('edit_first_name').value = userToEdit.first_name;
-                    document.getElementById('edit_last_name').value = userToEdit.last_name;
-                    document.getElementById('edit_phone').value = userToEdit.phone;
-                    document.getElementById('edit_email').value = userToEdit.email;
-                    document.getElementById('edit_role_id').value = userToEdit.role_id;
-
-                    document.getElementById('editModal').classList.remove('hidden');
-                });
-            });
-
-            document.getElementById('closeEditModal').addEventListener('click', function() {
-                document.getElementById('editModal').classList.add('hidden');
-            });
-
-            function closeEditModalOnSubmit() {
-                document.getElementById('editModal').classList.add('hidden');
-                return true;
-            }
-
-        // Handle Delete Confirmation
-        let rutToDelete = null;
-        document.querySelectorAll('.btn-delete').forEach(button => {
-            button.addEventListener('click', function() {
-                rutToDelete = this.getAttribute('data-rut');
-                document.getElementById('confirmModal').classList.remove('hidden');
-            });
-        });
-
-        document.getElementById('cancelDelete').addEventListener('click', function() {
-            document.getElementById('confirmModal').classList.add('hidden');
-        });
-
-        document.getElementById('confirmDelete').addEventListener('click', function() {
-            if (rutToDelete) {
-                fetch(`/eliminar_usuario/${rutToDelete}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': '{{ csrf_token() }}' // If you use CSRF protection
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload(); // Reload the page to reflect changes
-                    } else {
-                        alert('Error al eliminar el usuario.');
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            }
-            document.getElementById('confirmModal').classList.add('hidden');
-        });
-    </script>
+    <!-- Edit Project Modal -->
+    <div id="editProjectModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-1/2">
+            <h2 class="text-2xl mb-4">Editar Proyecto</h2>
+            <form id="editProjectForm" method="POST" action="{{ url_for('project.editar_proyecto') }}" onsubmit="return closeModalOnSubmit('editProjectModal')">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="id" id="edit_project_id">
+                <div class="mb-4">
+                    <label for="edit_project_name" class="block text-gray-700">Nombre</label>
+                    <input type="text" name="name" id="edit_project_name" class="w-full px-3 py-2 border rounded-lg" required>
+                </div>
+                <div class="mb-4">
+                    <label for="edit_project_fondo" class="block text-gray-700">Fondo</label>
+                    <input type="text" name="fondo" id="edit_project_fondo" class="w-full px-3 py-2 border rounded-lg" required>
+                </div>
+                <div class="flex justify-end">
+                    <button type="button" id="closeEditProjectModal" class="bg-gray-500 text-white py-2 px-4 rounded-lg mr-2">Cancelar</button>
+                    <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-lg">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/admin_dashboard.js') }}"></script>
 </body>
 </html>

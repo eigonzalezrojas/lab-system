@@ -1,4 +1,3 @@
-from src import db
 from src.models.userRole import UserRole
 from src.models.userAccount import UserAccount
 from src.models.project import Project
