@@ -167,4 +167,70 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         document.getElementById('confirmProjectModal').classList.add('hidden');
     });
+    // Para máquinas
+    document.getElementById('openMachineModal').addEventListener('click', function () {
+        document.getElementById('machineModal').classList.remove('hidden');
+    });
+
+    document.getElementById('closeMachineModal').addEventListener('click', function () {
+        document.getElementById('machineModal').classList.add('hidden');
+    });
+
+    function closeModalOnSubmit(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+        return true;
+    }
+
+    // Handle Edit Confirmation para máquinas
+    document.querySelectorAll('.btn-edit-machine').forEach(button => {
+        button.addEventListener('click', function () {
+            const id = this.getAttribute('data-id');
+            const name = this.getAttribute('data-name');
+
+            document.getElementById('edit_machine_id').value = id;
+            document.getElementById('edit_machine_name').value = name;
+
+            document.getElementById('editMachineModal').classList.remove('hidden');
+        });
+    });
+
+    document.getElementById('closeEditMachineModal').addEventListener('click', function () {
+        document.getElementById('editMachineModal').classList.add('hidden');
+    });
+
+    // Handle Delete Confirmation para máquinas
+    let machineIdToDelete = null;
+    document.querySelectorAll('.btn-delete-machine').forEach(button => {
+        button.addEventListener('click', function () {
+            machineIdToDelete = this.getAttribute('data-id');
+            document.getElementById('confirmModal').classList.remove('hidden');
+        });
+    });
+
+    document.getElementById('cancelDelete').addEventListener('click', function () {
+        document.getElementById('confirmModal').classList.add('hidden');
+    });
+
+    document.getElementById('confirmDelete').addEventListener('click', function () {
+        if (machineIdToDelete) {
+            fetch(`/eliminar_maquina/${machineIdToDelete}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token() }}'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error al eliminar la máquina.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+        document.getElementById('confirmModal').classList.add('hidden');
+    });
+
 });
