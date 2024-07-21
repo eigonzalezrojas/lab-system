@@ -305,4 +305,75 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         document.getElementById('confirmSolventModal').classList.add('hidden');
     });
+
+
+    // Para preparación de muestras
+    const openSamplePreparationModalButton = document.getElementById('openSamplePreparationModal');
+    const closeSamplePreparationModalButton = document.getElementById('closeSamplePreparationModal');
+    const samplePreparationEditButtons = document.querySelectorAll('.btn-edit-sample-preparation');
+    const samplePreparationDeleteButtons = document.querySelectorAll('.btn-delete-sample-preparation');
+
+    if (openSamplePreparationModalButton) {
+        openSamplePreparationModalButton.addEventListener('click', function () {
+            document.getElementById('samplePreparationModal').classList.remove('hidden');
+        });
+    }
+
+    if (closeSamplePreparationModalButton) {
+        closeSamplePreparationModalButton.addEventListener('click', function () {
+            document.getElementById('samplePreparationModal').classList.add('hidden');
+        });
+    }
+
+    samplePreparationEditButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const id = this.getAttribute('data-id');
+            const name = this.getAttribute('data-name');
+
+            document.getElementById('edit_sample_preparation_id').value = id;
+            document.getElementById('edit_sample_preparation_name').value = name;
+
+            document.getElementById('editSamplePreparationModal').classList.remove('hidden');
+        });
+    });
+
+    if (document.getElementById('closeEditSamplePreparationModal')) {
+        document.getElementById('closeEditSamplePreparationModal').addEventListener('click', function () {
+            document.getElementById('editSamplePreparationModal').classList.add('hidden');
+        });
+    }
+
+    let samplePreparationIdToDelete = null;
+    samplePreparationDeleteButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            samplePreparationIdToDelete = this.getAttribute('data-id');
+            document.getElementById('confirmSamplePreparationModal').classList.remove('hidden');
+        });
+    });
+
+    document.getElementById('cancelDeleteSamplePreparation').addEventListener('click', function () {
+        document.getElementById('confirmSamplePreparationModal').classList.add('hidden');
+    });
+
+    document.getElementById('confirmDeleteSamplePreparation').addEventListener('click', function () {
+        if (samplePreparationIdToDelete) {
+            fetch(`/eliminar_preparacion/${samplePreparationIdToDelete}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token() }}'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error al eliminar la preparación de muestra.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+        document.getElementById('confirmSamplePreparationModal').classList.add('hidden');
+    });
 });
