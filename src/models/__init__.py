@@ -8,3 +8,5 @@ from src.models.sample import Sample
 from src.models.request import Request
 from src.models.experiment import Experiment
 from src.models.invoice import Invoice
+from src.models.samplePreparation import SamplePreparation
+from src.models.observation import Observation
