@@ -7,9 +7,11 @@ def init_app(app):
     from .userRoutes import user_bp
     from .projectRoutes import project_bp
     from .machineRoutes import machine_bp
+    from .solventRoutes import solvent_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(project_bp)
     app.register_blueprint(machine_bp)
+    app.register_blueprint(solvent_bp)

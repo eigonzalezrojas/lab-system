@@ -91,6 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('confirmModal').classList.add('hidden');
     });
 
+
     // Para proyectos
     const openProjectModalButton = document.getElementById('openProjectModal');
     const closeProjectModalButton = document.getElementById('closeProjectModal');
@@ -107,11 +108,6 @@ document.addEventListener('DOMContentLoaded', function () {
         closeProjectModalButton.addEventListener('click', function () {
             document.getElementById('projectModal').classList.add('hidden');
         });
-    }
-
-    function closeModalOnSubmit(modalId) {
-        document.getElementById(modalId).classList.add('hidden');
-        return true;
     }
 
     projectEditButtons.forEach(button => {
@@ -167,22 +163,27 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         document.getElementById('confirmProjectModal').classList.add('hidden');
     });
+
+
     // Para máquinas
-    document.getElementById('openMachineModal').addEventListener('click', function () {
-        document.getElementById('machineModal').classList.remove('hidden');
-    });
+    const openMachineModalButton = document.getElementById('openMachineModal');
+    const closeMachineModalButton = document.getElementById('closeMachineModal');
+    const machineEditButtons = document.querySelectorAll('.btn-edit-machine');
+    const machineDeleteButtons = document.querySelectorAll('.btn-delete-machine');
 
-    document.getElementById('closeMachineModal').addEventListener('click', function () {
-        document.getElementById('machineModal').classList.add('hidden');
-    });
-
-    function closeModalOnSubmit(modalId) {
-        document.getElementById(modalId).classList.add('hidden');
-        return true;
+    if (openMachineModalButton) {
+        openMachineModalButton.addEventListener('click', function () {
+            document.getElementById('machineModal').classList.remove('hidden');
+        });
     }
 
-    // Handle Edit Confirmation para máquinas
-    document.querySelectorAll('.btn-edit-machine').forEach(button => {
+    if (closeMachineModalButton) {
+        closeMachineModalButton.addEventListener('click', function () {
+            document.getElementById('machineModal').classList.add('hidden');
+        });
+    }
+
+    machineEditButtons.forEach(button => {
         button.addEventListener('click', function () {
             const id = this.getAttribute('data-id');
             const name = this.getAttribute('data-name');
@@ -194,24 +195,25 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    document.getElementById('closeEditMachineModal').addEventListener('click', function () {
-        document.getElementById('editMachineModal').classList.add('hidden');
-    });
+    if (document.getElementById('closeEditMachineModal')) {
+        document.getElementById('closeEditMachineModal').addEventListener('click', function () {
+            document.getElementById('editMachineModal').classList.add('hidden');
+        });
+    }
 
-    // Handle Delete Confirmation para máquinas
     let machineIdToDelete = null;
-    document.querySelectorAll('.btn-delete-machine').forEach(button => {
+    machineDeleteButtons.forEach(button => {
         button.addEventListener('click', function () {
             machineIdToDelete = this.getAttribute('data-id');
-            document.getElementById('confirmModal').classList.remove('hidden');
+            document.getElementById('confirmMachineModal').classList.remove('hidden');
         });
     });
 
-    document.getElementById('cancelDelete').addEventListener('click', function () {
-        document.getElementById('confirmModal').classList.add('hidden');
+    document.getElementById('cancelDeleteMachine').addEventListener('click', function () {
+        document.getElementById('confirmMachineModal').classList.add('hidden');
     });
 
-    document.getElementById('confirmDelete').addEventListener('click', function () {
+    document.getElementById('confirmDeleteMachine').addEventListener('click', function () {
         if (machineIdToDelete) {
             fetch(`/eliminar_maquina/${machineIdToDelete}`, {
                 method: 'DELETE',
@@ -230,7 +232,77 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .catch(error => console.error('Error:', error));
         }
-        document.getElementById('confirmModal').classList.add('hidden');
+        document.getElementById('confirmMachineModal').classList.add('hidden');
     });
 
+
+    // Para solventes
+    const openSolventModalButton = document.getElementById('openSolventModal');
+    const closeSolventModalButton = document.getElementById('closeSolventModal');
+    const solventEditButtons = document.querySelectorAll('.btn-edit-solvent');
+    const solventDeleteButtons = document.querySelectorAll('.btn-delete-solvent');
+
+    if (openSolventModalButton) {
+        openSolventModalButton.addEventListener('click', function () {
+            document.getElementById('solventModal').classList.remove('hidden');
+        });
+    }
+
+    if (closeSolventModalButton) {
+        closeSolventModalButton.addEventListener('click', function () {
+            document.getElementById('solventModal').classList.add('hidden');
+        });
+    }
+
+    solventEditButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const id = this.getAttribute('data-id');
+            const name = this.getAttribute('data-name');
+
+            document.getElementById('edit_solvent_id').value = id;
+            document.getElementById('edit_solvent_name').value = name;
+
+            document.getElementById('editSolventModal').classList.remove('hidden');
+        });
+    });
+
+    if (document.getElementById('closeEditSolventModal')) {
+        document.getElementById('closeEditSolventModal').addEventListener('click', function () {
+            document.getElementById('editSolventModal').classList.add('hidden');
+        });
+    }
+
+    let solventIdToDelete = null;
+    solventDeleteButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            solventIdToDelete = this.getAttribute('data-id');
+            document.getElementById('confirmSolventModal').classList.remove('hidden');
+        });
+    });
+
+    document.getElementById('cancelDeleteSolvent').addEventListener('click', function () {
+        document.getElementById('confirmSolventModal').classList.add('hidden');
+    });
+
+    document.getElementById('confirmDeleteSolvent').addEventListener('click', function () {
+        if (solventIdToDelete) {
+            fetch(`/eliminar_solvente/${solventIdToDelete}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token() }}'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error al eliminar el solvente.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+        document.getElementById('confirmSolventModal').classList.add('hidden');
+    });
 });
