@@ -307,7 +307,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-    // Para preparación de muestras
+    // Para preparación muestras
     const openSamplePreparationModalButton = document.getElementById('openSamplePreparationModal');
     const closeSamplePreparationModalButton = document.getElementById('closeSamplePreparationModal');
     const samplePreparationEditButtons = document.querySelectorAll('.btn-edit-sample-preparation');
@@ -376,4 +376,75 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         document.getElementById('confirmSamplePreparationModal').classList.add('hidden');
     });
+    // Para muestras
+    const openSampleModalButton = document.getElementById('openSampleModal');
+    const closeSampleModalButton = document.getElementById('closeSampleModal');
+    const sampleEditButtons = document.querySelectorAll('.btn-edit-sample');
+    const sampleDeleteButtons = document.querySelectorAll('.btn-delete-sample');
+
+    if (openSampleModalButton) {
+        openSampleModalButton.addEventListener('click', function () {
+            document.getElementById('sampleModal').classList.remove('hidden');
+        });
+    }
+
+    if (closeSampleModalButton) {
+        closeSampleModalButton.addEventListener('click', function () {
+            document.getElementById('sampleModal').classList.add('hidden');
+        });
+    }
+
+    sampleEditButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const id = this.getAttribute('data-id');
+            const name = this.getAttribute('data-name');
+
+            document.getElementById('edit_sample_id').value = id;
+            document.getElementById('edit_sample_name').value = name;
+
+            document.getElementById('editSampleModal').classList.remove('hidden');
+        });
+    });
+
+    if (document.getElementById('closeEditSampleModal')) {
+        document.getElementById('closeEditSampleModal').addEventListener('click', function () {
+            document.getElementById('editSampleModal').classList.add('hidden');
+        });
+    }
+
+    let sampleIdToDelete = null;
+    sampleDeleteButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            sampleIdToDelete = this.getAttribute('data-id');
+            document.getElementById('confirmSampleModal').classList.remove('hidden');
+        });
+    });
+
+    document.getElementById('cancelDeleteSample').addEventListener('click', function () {
+        document.getElementById('confirmSampleModal').classList.add('hidden');
+    });
+
+    document.getElementById('confirmDeleteSample').addEventListener('click', function () {
+        if (sampleIdToDelete) {
+            fetch(`/eliminar_muestra/${sampleIdToDelete}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token() }}'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error al eliminar la muestra.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+        document.getElementById('confirmSampleModal').classList.add('hidden');
+    });
+
+
 });

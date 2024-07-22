@@ -26,6 +26,7 @@
                 <a href="{{ url_for('project.proyectos') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Proyectos</a>
                 <a href="{{ url_for('machine.maquinas', section='maquinas') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Máquinas</a>
                 <a href="{{ url_for('solvent.solventes', section='solventes') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Solventes</a>
+                <a href="{{ url_for('sample.muestras', section='muestras') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Muestras</a>
                 <a href="{{ url_for('sample_preparation.sample_preparations', section='samplePreparations') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Preparación muestra</a>
                 <div class="nav-footer mt-auto">
                     <a href="{{ url_for('auth.logout') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Logout</a>
@@ -229,6 +230,48 @@
                         {% endfor %}
                     </tbody>
                 </table>
+            {% elif section == 'samples' %}
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-2xl">Muestras</h1>
+                    <button id="openSampleModal" class="bg-green-500 text-white py-2 px-4 rounded-lg">Crear</button>
+                </div>
+                <table class="min-w-full bg-white">
+                    <thead>
+                        <tr>
+                            <th class="py-2 px-4 bg-gray-200">Nombre</th>
+                            <th class="py-2 px-4 bg-gray-200">Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sample in samples %}
+                            <tr>
+                                <td class="border px-4 py-2">{{ sample.name }}</td>
+                                <td class="border px-4 py-2">
+                                    <div class="flex space-x-2 justify-center">
+                                        <a href="#" class="btn btn-edit-sample" data-id="{{ sample.id }}" data-name="{{ sample.name }}">
+                                            <div class="bg-blue-500 p-2 rounded">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path d="M17.414 2.586a2 2 0 00-2.828 0L13 4.172 15.828 7l1.586-1.586a2 2 0 000-2.828zM12 5l3 3-9 9H3v-3l9-9z"/>
+                                                </svg>
+                                            </div>
+                                        </a>
+                                        <a href="#" class="btn btn-delete-sample" data-id="{{ sample.id }}">
+                                            <div class="bg-red-500 p-2 rounded">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M8 4a1 1 0 011-1h2a1 1 0 011 1v1h5a1 1 0 110 2h-1v9a2 2 0 01-2 2H6a2 2 0 01-2-2V7H3a1 1 0 110-2h5V4zm1 3a1 1 0 00-1 1v7a1 1 0 102 0V8a1 1 0 00-1-1zm4 1a1 1 0 10-2 0v7a1 1 0 102 0V8z" clip-rule="evenodd"/>
+                                                </svg>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td class="border px-4 py-2 text-center" colspan="2">No hay muestras registradas.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             {% elif section == 'sample_preparations' %}
                 <div class="flex justify-between items-center mb-6">
                     <h1 class="text-2xl">Preparación de Muestras</h1>
@@ -272,7 +315,7 @@
                     </tbody>
                 </table>
             {% else %}
-                <h1>Bienvenid@ al panel administrador</h1>
+                <h1>Bienvenido(a) al panel administrador</h1>
             {% endif %}
 
         </div>
@@ -575,6 +618,55 @@
             <div class="flex justify-end mt-4">
                 <button type="button" id="cancelDeleteSamplePreparation" class="bg-gray-500 text-white py-2 px-4 rounded-lg mr-2">Cancelar</button>
                 <button type="button" id="confirmDeleteSamplePreparation" class="bg-red-500 text-white py-2 px-4 rounded-lg">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Sample Modal -->
+    <div id="sampleModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-1/2">
+            <h2 class="text-2xl mb-4">Crear Muestra</h2>
+            <form method="POST" action="{{ url_for('sample.crear_muestra') }}" onsubmit="return closeModalOnSubmit('sampleModal')">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="mb-4">
+                    <label for="sample_name" class="block text-gray-700">Nombre</label>
+                    <input type="text" name="name" id="sample_name" class="w-full px-3 py-2 border rounded-lg" required>
+                </div>
+                <div class="flex justify-end">
+                    <button type="button" id="closeSampleModal" class="bg-gray-500 text-white py-2 px-4 rounded-lg mr-2">Cancelar</button>
+                    <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded-lg">Crear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Sample Modal -->
+    <div id="editSampleModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-1/2">
+            <h2 class="text-2xl mb-4">Editar Muestra</h2>
+            <form id="editSampleForm" method="POST" action="{{ url_for('sample.editar_muestra') }}" onsubmit="return closeModalOnSubmit('editSampleModal')">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="id" id="edit_sample_id">
+                <div class="mb-4">
+                    <label for="edit_sample_name" class="block text-gray-700">Nombre</label>
+                    <input type="text" name="name" id="edit_sample_name" class="w-full px-3 py-2 border rounded-lg" required>
+                </div>
+                <div class="flex justify-end">
+                    <button type="button" id="closeEditSampleModal" class="bg-gray-500 text-white py-2 px-4 rounded-lg mr-2">Cancelar</button>
+                    <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-lg">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Sample Modal -->
+    <div id="confirmSampleModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
+            <h2 class="text-2xl mb-4">Confirmación</h2>
+            <p>¿Estás seguro de que quieres eliminar esta muestra?</p>
+            <div class="flex justify-end mt-4">
+                <button type="button" id="cancelDeleteSample" class="bg-gray-500 text-white py-2 px-4 rounded-lg mr-2">Cancelar</button>
+                <button type="button" id="confirmDeleteSample" class="bg-red-500 text-white py-2 px-4 rounded-lg">Aceptar</button>
             </div>
         </div>
     </div>
