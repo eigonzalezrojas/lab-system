@@ -1,6 +1,5 @@
 from flask import Blueprint
 
-
 def init_app(app):
     from .authRoutes import auth_bp
     from .mainRoutes import main_bp
@@ -10,6 +9,7 @@ def init_app(app):
     from .solventRoutes import solvent_bp
     from .samplePreparationRoutes import sample_preparation_bp
     from .sampleRoutes import sample_bp
+    from .homeRoutes import home_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
@@ -19,3 +19,4 @@ def init_app(app):
     app.register_blueprint(solvent_bp)
     app.register_blueprint(sample_preparation_bp)
     app.register_blueprint(sample_bp)
+    app.register_blueprint(home_bp)

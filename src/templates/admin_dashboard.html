@@ -21,9 +21,9 @@
                 <p class="font-bold">{{ current_user.first_name }} {{ current_user.last_name }}</p>
             </div>
             <nav class="flex flex-col space-y-2 mt-4">
-                <a href="{{ url_for('main.admin_dashboard') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Inicio</a>
-                <a href="{{ url_for('user.usuarios') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Usuarios</a>
-                <a href="{{ url_for('project.proyectos') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Proyectos</a>
+                <a href="{{ url_for('home.home') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Inicio</a>
+                <a href="{{ url_for('user.usuarios', section='usuarios') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Usuarios</a>
+                <a href="{{ url_for('project.proyectos', section='proyectos') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Proyectos</a>
                 <a href="{{ url_for('machine.maquinas', section='maquinas') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Máquinas</a>
                 <a href="{{ url_for('solvent.solventes', section='solventes') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Solventes</a>
                 <a href="{{ url_for('sample.muestras', section='muestras') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Muestras</a>
@@ -314,8 +314,46 @@
                         {% endfor %}
                     </tbody>
                 </table>
+            {% elif section == 'home' %}
+                <!-- Resumen de estadísticas -->
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-blue-500 text-white p-6 rounded-lg shadow-lg">
+                        <h2 class="text-2xl">Usuarios</h2>
+                        <p class="text-4xl">{{total_usuarios}}</p>
+                    </div>
+                    <div class="bg-green-500 text-white p-6 rounded-lg shadow-lg">
+                        <h2 class="text-2xl">Proyectos</h2>
+                        <p class="text-4xl">{{total_proyectos}}</p>
+                    </div>
+                    <div class="bg-purple-500 text-white p-6 rounded-lg shadow-lg">
+                        <h2 class="text-2xl">Máquinas</h2>
+                        <p class="text-4xl">{{total_maquinas}}</p>
+                    </div>
+                    <div class="bg-yellow-500 text-white p-6 rounded-lg shadow-lg">
+                        <h2 class="text-2xl">Solventes</h2>
+                        <p class="text-4xl">{{total_solventes}}</p>
+                    </div>
+                    <div class="bg-red-500 text-white p-6 rounded-lg shadow-lg">
+                        <h2 class="text-2xl">Muestras</h2>
+                        <p class="text-4xl">{{total_muestras}}</p>
+                    </div>
+                    <div class="bg-teal-500 text-white p-6 rounded-lg shadow-lg">
+                        <h2 class="text-2xl">Preparaciones de Muestras</h2>
+                        <p class="text-4xl">{{total_preparaciones}}</p>
+                    </div>
+                </div>
             {% else %}
-                <h1>Bienvenido(a) al panel administrador</h1>
+                <section class="bg-white dark:bg-gray-900">
+                    <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
+                        <div class="mx-auto max-w-screen-sm text-center">
+                            <h1 class="mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-primary-600 dark:text-primary-500">404</h1>
+                            <p class="mb-4 text-3xl tracking-tight font-bold text-gray-900 md:text-4xl dark:text-white">Something's missing.</p>
+                            <p class="mb-4 text-lg font-light text-gray-500 dark:text-gray-400">Sorry, we can't find that page. You'll find lots to explore on the home page. </p>
+                            <a href="#" class="inline-flex text-white bg-primary-600 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-900 my-4">Back to Homepage</a>
+                        </div>
+                    </div>
+                </section>
+
             {% endif %}
 
         </div>
