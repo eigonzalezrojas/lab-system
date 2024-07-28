@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
-from src.models import UserAccount, UserRole
+from werkzeug.security import generate_password_hash, check_password_hash
+from src.models import UserAccount
 from src import db
 import os
 import random
@@ -71,6 +72,27 @@ def forgot_password():
         else:
             flash('El Rut ingresado no está registrado', 'danger')
     return render_template('forgot_password.html')
+
+
+@auth_bp.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    if request.method == 'POST':
+        current_password = request.form.get('current_password')
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+
+        if not check_password_hash(current_user.password_hash, current_password):
+            flash('La contraseña actual es incorrecta', 'danger')
+        elif new_password != confirm_password:
+            flash('La nueva contraseña y la confirmación no coinciden', 'danger')
+        else:
+            current_user.password_hash = generate_password_hash(new_password)
+            db.session.commit()
+            flash('Contraseña actualizada con éxito', 'success')
+            return redirect(url_for('home.home'))
+
+    return render_template('change_password.html')
 
 @auth_bp.route('/logout')
 @login_required

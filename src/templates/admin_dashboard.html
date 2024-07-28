@@ -28,6 +28,7 @@
                 <a href="{{ url_for('solvent.solventes', section='solventes') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Solventes</a>
                 <a href="{{ url_for('sample.muestras', section='muestras') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Muestras</a>
                 <a href="{{ url_for('sample_preparation.sample_preparations', section='samplePreparations') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Preparación muestra</a>
+                <a href="{{ url_for('auth.change_password') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Cambiar Contraseña</a>
                 <div class="nav-footer mt-auto">
                     <a href="{{ url_for('auth.logout') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Logout</a>
                 </div>
@@ -353,9 +354,7 @@
                         </div>
                     </div>
                 </section>
-
             {% endif %}
-
         </div>
     </div>
 
