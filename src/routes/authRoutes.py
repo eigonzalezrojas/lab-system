@@ -10,8 +10,11 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from dotenv import load_dotenv
+from flask_wtf.csrf import CSRFProtect
+import time
 
 load_dotenv()
+csrf = CSRFProtect()
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -47,7 +50,7 @@ def login():
         if user and user.check_password(password):
             login_user(user)
             if user.is_admin():
-                return redirect(url_for('main.admin_dashboard'))
+                return redirect(url_for('home.home'))
             else:
                 return redirect(url_for('main.operador_dashboard'))
         else:
@@ -71,8 +74,9 @@ def forgot_password():
                 flash('Hubo un error en el envío del correo', 'danger')
         else:
             flash('El Rut ingresado no está registrado', 'danger')
+        time.sleep(1)
+        return redirect(url_for('auth.login'))
     return render_template('forgot_password.html')
-
 
 @auth_bp.route('/change_password', methods=['GET', 'POST'])
 @login_required
@@ -90,7 +94,9 @@ def change_password():
             current_user.password_hash = generate_password_hash(new_password)
             db.session.commit()
             flash('Contraseña actualizada con éxito', 'success')
-            return redirect(url_for('home.home'))
+            logout_user()
+            time.sleep(1)
+            return redirect(url_for('auth.login'))
 
     return render_template('change_password.html')
 
