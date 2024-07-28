@@ -1,5 +1,3 @@
-from flask import Blueprint
-
 def init_app(app):
     from .authRoutes import auth_bp
     from .mainRoutes import main_bp
