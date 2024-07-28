@@ -1,4 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
+    function getCsrfToken() {
+        return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    }
+
     // Para usuarios
     const openUserModalButton = document.getElementById('openModal');
     const closeUserModalButton = document.getElementById('closeModal');
@@ -75,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token() }}'
+                    'X-CSRFToken': getCsrfToken()
                 }
             })
                 .then(response => response.json())
@@ -90,7 +94,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         document.getElementById('confirmModal').classList.add('hidden');
     });
-
 
     // Para proyectos
     const openProjectModalButton = document.getElementById('openProjectModal');
@@ -148,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token() }}'
+                    'X-CSRFToken': getCsrfToken()
                 }
             })
                 .then(response => response.json())
@@ -163,7 +166,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         document.getElementById('confirmProjectModal').classList.add('hidden');
     });
-
 
     // Para máquinas
     const openMachineModalButton = document.getElementById('openMachineModal');
@@ -219,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token() }}'
+                    'X-CSRFToken': getCsrfToken()
                 }
             })
                 .then(response => response.json())
@@ -234,7 +236,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         document.getElementById('confirmMachineModal').classList.add('hidden');
     });
-
 
     // Para solventes
     const openSolventModalButton = document.getElementById('openSolventModal');
@@ -290,7 +291,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token() }}'
+                    'X-CSRFToken': getCsrfToken()
                 }
             })
                 .then(response => response.json())
@@ -305,7 +306,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         document.getElementById('confirmSolventModal').classList.add('hidden');
     });
-
 
     // Para preparación muestras
     const openSamplePreparationModalButton = document.getElementById('openSamplePreparationModal');
@@ -361,7 +361,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token() }}'
+                    'X-CSRFToken': getCsrfToken()
                 }
             })
                 .then(response => response.json())
@@ -376,6 +376,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         document.getElementById('confirmSamplePreparationModal').classList.add('hidden');
     });
+
     // Para muestras
     const openSampleModalButton = document.getElementById('openSampleModal');
     const closeSampleModalButton = document.getElementById('closeSampleModal');
@@ -430,7 +431,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token() }}'
+                    'X-CSRFToken': getCsrfToken()
                 }
             })
                 .then(response => response.json())
@@ -445,6 +446,4 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         document.getElementById('confirmSampleModal').classList.add('hidden');
     });
-
-
 });
