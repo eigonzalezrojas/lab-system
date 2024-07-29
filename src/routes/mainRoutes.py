@@ -11,4 +11,4 @@ def admin_dashboard():
 @main_bp.route('/operador_dashboard')
 @login_required
 def operador_dashboard():
-    return render_template('operador_dashboard.html')
+    return redirect(url_for('home.home_operator'))

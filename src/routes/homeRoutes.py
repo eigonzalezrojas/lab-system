@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template
 from flask_login import login_required
-from src.models import UserAccount, Project, Machine, Solvent, Sample, SamplePreparation
+from src.models import UserAccount, Project, Machine, Solvent, Sample, SamplePreparation, Request
+from src import db
 
 home_bp = Blueprint('home', __name__)
 
@@ -20,8 +21,25 @@ def get_statistics():
         'total_preparaciones': total_preparaciones,
     }
 
+def get_operator_statistics():
+    total_solicitudes = Request.query.count()
+    total_proyectos = Project.query.count()
+    suma_fondos = db.session.query(db.func.sum(Project.fondo)).scalar()
+    return {
+        'total_solicitudes': total_solicitudes,
+        'total_proyectos': total_proyectos,
+        'suma_fondos': suma_fondos,
+    }
+
+
 @home_bp.route('/home')
 @login_required
 def home():
     stats = get_statistics()
     return render_template('admin_dashboard.html', section='home', **stats)
+
+@home_bp.route('/home_operator')
+@login_required
+def home_operator():
+    stats = get_operator_statistics()
+    return render_template('operador_dashboard.html', section='home', **stats)

@@ -8,6 +8,8 @@ def init_app(app):
     from .samplePreparationRoutes import sample_preparation_bp
     from .sampleRoutes import sample_bp
     from .homeRoutes import home_bp
+    from .solicitudesRoutes import solicitudes_bp
+
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
@@ -18,3 +20,4 @@ def init_app(app):
     app.register_blueprint(sample_preparation_bp)
     app.register_blueprint(sample_bp)
     app.register_blueprint(home_bp)
+    app.register_blueprint(solicitudes_bp)

@@ -1,0 +1,20 @@
+.form-container {
+    max-width: 90%;
+    width: 100%;
+}
+
+.form-element {
+    height: 2.5rem;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.form-label {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.radio-label {
+    font-size: 0.875rem;
+}
