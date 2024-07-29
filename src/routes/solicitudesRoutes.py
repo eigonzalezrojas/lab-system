@@ -1,6 +1,8 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, make_response
 from flask_login import login_required, current_user
-from src.models import Project, Machine, Solvent, SamplePreparation, Sample
+from src.models import Project, Machine, Solvent, SamplePreparation, Sample, Request
+from src import db
+from fpdf import FPDF
 
 solicitudes_bp = Blueprint('solicitudes', __name__)
 
@@ -45,19 +47,45 @@ def agregar_solicitud():
     sample_preparation_id = request.form.get('sample_preparation_id')
     recovery = request.form.get('recovery')
     sample_ids = request.form.getlist('sample_ids')
+    project_id = request.form.get('project_id')
+    machine_id = request.form.get('machine_id')
 
-    # Aquí puedes manejar la lógica para procesar y guardar la solicitud
-    # Por ejemplo:
-    # nueva_solicitud = Solicitud(
-    #     user_id=current_user.id,
-    #     sample_name=sample_name,
-    #     solvent_id=solvent_id,
-    #     sample_preparation_id=sample_preparation_id,
-    #     recovery=recovery,
-    #     sample_ids=sample_ids
-    # )
-    # db.session.add(nueva_solicitud)
-    # db.session.commit()
+    new_request = Request(
+        user_rut=current_user.rut,
+        project_id=project_id,
+        solvent_id=solvent_id,
+        sample_preparation_id=sample_preparation_id,
+        sample_id=sample_ids[0],  # Asegúrate de manejar esto según tus necesidades
+        request_name=sample_name,
+        price=0  # Ajusta esto según sea necesario
+    )
+
+    db.session.add(new_request)
+    db.session.commit()
 
     flash('Solicitud agregada con éxito', 'success')
     return redirect(url_for('solicitudes.solicitudes'))
+
+@solicitudes_bp.route('/descargar/<int:solicitud_id>', methods=['GET'])
+@login_required
+def descargar(solicitud_id):
+    solicitud = Request.query.get_or_404(solicitud_id)
+
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+
+    # Agregar información de la solicitud al PDF
+    pdf.cell(200, 10, txt=f"Solicitud: {solicitud.request_name}", ln=True)
+    pdf.cell(200, 10, txt=f"Usuario: {solicitud.user_rut}", ln=True)
+    pdf.cell(200, 10, txt=f"Proyecto: {solicitud.project.name}", ln=True)
+    pdf.cell(200, 10, txt=f"Solvente: {solicitud.solvent.name}", ln=True)
+    pdf.cell(200, 10, txt=f"Preparación de Muestra: {solicitud.sample_preparation.name}", ln=True)
+    pdf.cell(200, 10, txt=f"Muestra: {solicitud.sample.name}", ln=True)
+    pdf.cell(200, 10, txt=f"Fecha: {solicitud.fecha.strftime('%Y-%m-%d %H:%M:%S')}", ln=True)
+    pdf.cell(200, 10, txt=f"Precio: {solicitud.price}", ln=True)
+
+    response = make_response(pdf.output(dest='S').encode('latin1'))
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = f'attachment; filename=solicitud_{solicitud_id}.pdf'
+    return response

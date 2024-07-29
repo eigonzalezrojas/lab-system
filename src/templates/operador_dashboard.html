@@ -70,6 +70,8 @@
                     </div>
                     <form method="POST" action="{{ url_for('solicitudes.agregar_solicitud') }}">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="project_id" value="{{ project.id }}">
+                        <input type="hidden" name="machine_id" value="{{ machine.id }}">
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                             <div>
                                 <label for="sample_name" class="form-label">Nombre de la muestra</label>
@@ -150,6 +152,33 @@
                         <h2 class="text-2xl">Total Fondos</h2>
                         <p class="text-4xl">{{ suma_fondos }} UF</p>
                     </div>
+                </div>
+                <!-- Tabla de solicitudes -->
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-gray-300">
+                        <thead>
+                            <tr class="bg-gray-200">
+                                <th class="py-2 px-4 border-b text-left">Nombre de la Muestra</th>
+                                <th class="py-2 px-4 border-b text-left">Nombre del Usuario</th>
+                                <th class="py-2 px-4 border-b text-left">Nombre del Proyecto</th>
+                                <th class="py-2 px-4 border-b text-left">Fecha</th>
+                                <th class="py-2 px-4 border-b text-left">Documento</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for solicitud in solicitudes %}
+                                <tr>
+                                    <td class="py-2 px-4 border-b">{{ solicitud.sample.name }}</td>
+                                    <td class="py-2 px-4 border-b">{{ solicitud.user.first_name }} {{ solicitud.user.last_name }}</td>
+                                    <td class="py-2 px-4 border-b">{{ solicitud.project.name }}</td>
+                                    <td class="py-2 px-4 border-b">{{ solicitud.fecha.strftime('%Y-%m-%d') }}</td>
+                                    <td class="py-2 px-4 border-b">
+                                        <a href="{{ url_for('solicitudes.descargar', solicitud_id=solicitud.id) }}" class="text-blue-500 hover:underline">Descargar</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             {% else %}
                 Welcome to the User Dashboard!

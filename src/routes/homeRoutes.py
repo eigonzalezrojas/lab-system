@@ -25,10 +25,12 @@ def get_operator_statistics():
     total_solicitudes = Request.query.count()
     total_proyectos = Project.query.count()
     suma_fondos = db.session.query(db.func.sum(Project.fondo)).scalar()
+    solicitudes = Request.query.all()
     return {
         'total_solicitudes': total_solicitudes,
         'total_proyectos': total_proyectos,
         'suma_fondos': suma_fondos,
+        'solicitudes': solicitudes
     }
 
 
