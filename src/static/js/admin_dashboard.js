@@ -399,9 +399,11 @@ document.addEventListener('DOMContentLoaded', function () {
         button.addEventListener('click', function () {
             const id = this.getAttribute('data-id');
             const name = this.getAttribute('data-name');
+            const price = this.getAttribute('data-price'); // Obtener el precio
 
             document.getElementById('edit_sample_id').value = id;
             document.getElementById('edit_sample_name').value = name;
+            document.getElementById('edit_sample_price').value = price; // Establecer el precio
 
             document.getElementById('editSampleModal').classList.remove('hidden');
         });
@@ -446,4 +448,164 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         document.getElementById('confirmSampleModal').classList.add('hidden');
     });
+
+    // Para núcleos
+    const openNucleoModalButton = document.getElementById('openNucleoModal');
+    const closeNucleoModalButton = document.getElementById('closeNucleoModal');
+    const nucleoEditButtons = document.querySelectorAll('.btn-edit-nucleo');
+    const nucleoDeleteButtons = document.querySelectorAll('.btn-delete-nucleo');
+
+    if (openNucleoModalButton) {
+        openNucleoModalButton.addEventListener('click', function () {
+            document.getElementById('nucleoModal').classList.remove('hidden');
+        });
+    }
+
+    if (closeNucleoModalButton) {
+        closeNucleoModalButton.addEventListener('click', function () {
+            document.getElementById('nucleoModal').classList.add('hidden');
+        });
+    }
+
+    nucleoEditButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const id = this.getAttribute('data-id');
+            const nombre = this.getAttribute('data-nombre');
+            const precio = this.getAttribute('data-precio');
+
+            document.getElementById('edit_nucleo_id').value = id;
+            document.getElementById('edit_nucleo_nombre').value = nombre;
+            document.getElementById('edit_nucleo_precio').value = precio;
+
+            document.getElementById('editNucleoModal').classList.remove('hidden');
+        });
+    });
+
+    if (document.getElementById('closeEditNucleoModal')) {
+        document.getElementById('closeEditNucleoModal').addEventListener('click', function () {
+            document.getElementById('editNucleoModal').classList.add('hidden');
+        });
+    }
+
+    let nucleoIdToDelete = null;
+    nucleoDeleteButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            nucleoIdToDelete = this.getAttribute('data-id');
+            document.getElementById('confirmNucleoModal').classList.remove('hidden');
+        });
+    });
+
+    document.getElementById('cancelNucleoDelete').addEventListener('click', function () {
+        document.getElementById('confirmNucleoModal').classList.add('hidden');
+    });
+
+    document.getElementById('confirmNucleoDelete').addEventListener('click', function () {
+        if (nucleoIdToDelete) {
+            fetch(`/eliminar_nucleo/${nucleoIdToDelete}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken()
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error al eliminar el núcleo.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+        document.getElementById('confirmNucleoModal').classList.add('hidden');
+    });
+
+    // Función para inicializar el cambio de estado de solicitudes
+    function initializeEstadoChange() {
+        const updateButtons = document.querySelectorAll('.actualizar-estado-btn');
+
+        updateButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const form = this.closest('.estado-form');
+                const solicitudId = form.getAttribute('data-solicitud-id');
+                const estadoSelect = form.querySelector('.estado-select');
+                const nuevoEstado = estadoSelect.value;
+
+                cambiarEstadoSolicitud(solicitudId, nuevoEstado);
+            });
+        });
+    }
+
+    // Función para manejar el cambio de estado de una solicitud
+    function cambiarEstadoSolicitud(solicitudId, nuevoEstado) {
+        fetch(`/cambiar_estado/${solicitudId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify({
+                estado: nuevoEstado
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Estado actualizado con éxito');
+                    location.reload(); // Recargar para mostrar el nuevo estado
+                } else {
+                    alert('Error al actualizar el estado.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    // Función para inicializar la eliminación de solicitudes
+    // Función para inicializar la eliminación de solicitudes
+    function initializeDeleteRequest() {
+        const requestDeleteButtons = document.querySelectorAll('.delete-request-button');
+        let requestIdToDelete = null;
+
+        // Añadir evento de clic a cada botón de eliminación
+        requestDeleteButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                requestIdToDelete = this.getAttribute('data-id');
+                document.getElementById('confirmRequestModal').classList.remove('hidden');
+            });
+        });
+
+        // Cancelar eliminación y ocultar el modal
+        document.getElementById('cancelDeleteRequest').addEventListener('click', function () {
+            document.getElementById('confirmRequestModal').classList.add('hidden');
+        });
+
+        // Confirmar eliminación y enviar solicitud POST
+        document.getElementById('confirmDeleteRequest').addEventListener('click', function () {
+            if (requestIdToDelete) {
+                fetch(`/eliminar_solicitud/${requestIdToDelete}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCsrfToken()
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        alert('Error al eliminar la solicitud.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+            document.getElementById('confirmRequestModal').classList.add('hidden');
+        });
+    }
+
+
+    // Inicializar las funciones
+    initializeEstadoChange();
+    initializeDeleteRequest();
+
 });

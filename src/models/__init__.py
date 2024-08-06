@@ -10,3 +10,4 @@ from src.models.experiment import Experiment
 from src.models.invoice import Invoice
 from src.models.samplePreparation import SamplePreparation
 from src.models.observation import Observation
+from src.models.nucleo import Nucleo

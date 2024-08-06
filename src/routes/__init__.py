@@ -9,6 +9,7 @@ def init_app(app):
     from .sampleRoutes import sample_bp
     from .homeRoutes import home_bp
     from .solicitudesRoutes import solicitudes_bp
+    from .nucleoRoutes import nucleo_bp
 
 
     app.register_blueprint(auth_bp)
@@ -21,3 +22,4 @@ def init_app(app):
     app.register_blueprint(sample_bp)
     app.register_blueprint(home_bp)
     app.register_blueprint(solicitudes_bp)
+    app.register_blueprint(nucleo_bp)

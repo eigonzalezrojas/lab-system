@@ -26,8 +26,10 @@
                 <a href="{{ url_for('project.proyectos', section='proyectos') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Proyectos</a>
                 <a href="{{ url_for('machine.maquinas', section='maquinas') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Máquinas</a>
                 <a href="{{ url_for('solvent.solventes', section='solventes') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Solventes</a>
-                <a href="{{ url_for('sample.muestras', section='muestras') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Muestras</a>
+                <a href="{{ url_for('sample.muestras', section='muestras') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Experimentos</a>
+                <a href="{{ url_for('nucleo.nucleos', section='nucleos') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Núcleos</a>
                 <a href="{{ url_for('sample_preparation.sample_preparations', section='samplePreparations') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Preparación muestra</a>
+                <a href="{{ url_for('solicitudes.solicitudes_admin') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Solicitudes</a>
                 <a href="{{ url_for('auth.change_password') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Cambiar Contraseña</a>
                 <div class="nav-footer mt-auto">
                     <a href="{{ url_for('auth.logout') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">Logout</a>
@@ -233,13 +235,14 @@
                 </table>
             {% elif section == 'samples' %}
                 <div class="flex justify-between items-center mb-6">
-                    <h1 class="text-2xl">Muestras</h1>
+                    <h1 class="text-2xl">Experimentos</h1>
                     <button id="openSampleModal" class="bg-green-500 text-white py-2 px-4 rounded-lg">Crear</button>
                 </div>
                 <table class="min-w-full bg-white">
                     <thead>
                         <tr>
                             <th class="py-2 px-4 bg-gray-200">Nombre</th>
+                            <th class="py-2 px-4 bg-gray-200">Precio (UF)</th>
                             <th class="py-2 px-4 bg-gray-200">Opciones</th>
                         </tr>
                     </thead>
@@ -247,9 +250,10 @@
                         {% for sample in samples %}
                             <tr>
                                 <td class="border px-4 py-2">{{ sample.name }}</td>
+                                <td class="border px-4 py-2">{{ sample.price }} UF</td>
                                 <td class="border px-4 py-2">
                                     <div class="flex space-x-2 justify-center">
-                                        <a href="#" class="btn btn-edit-sample" data-id="{{ sample.id }}" data-name="{{ sample.name }}">
+                                        <a href="#" class="btn btn-edit-sample" data-id="{{ sample.id }}" data-name="{{ sample.name }}" data-price="{{ sample.price }}">
                                             <div class="bg-blue-500 p-2 rounded">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
                                                     <path d="M17.414 2.586a2 2 0 00-2.828 0L13 4.172 15.828 7l1.586-1.586a2 2 0 000-2.828zM12 5l3 3-9 9H3v-3l9-9z"/>
@@ -268,8 +272,52 @@
                             </tr>
                         {% else %}
                             <tr>
-                                <td class="border px-4 py-2 text-center" colspan="2">No hay muestras registradas.</td>
+                                <td class="border px-4 py-2 text-center" colspan="3">No hay muestras registradas.</td>
                             </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% elif section == 'nucleos' %}
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-2xl">Nucleos</h1>
+                    <button id="openNucleoModal" class="bg-green-500 text-white py-2 px-4 rounded-lg">Crear</button>
+                </div>
+                <table class="min-w-full bg-white">
+                    <thead>
+                        <tr>
+                            <th class="py-2 px-4 bg-gray-200">Nombre</th>
+                            <th class="py-2 px-4 bg-gray-200">Precio</th>
+                            <th class="py-2 px-4 bg-gray-200">Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for nucleo in nucleos %}
+                        <tr>
+                            <td class="border px-4 py-2">{{ nucleo.nombre }}</td>
+                            <td class="border px-4 py-2">{{ nucleo.precio }} UF</td>
+                            <td class="border px-4 py-2">
+                                <div class="flex space-x-2">
+                                    <a href="#" class="btn btn-edit-nucleo" data-id="{{ nucleo.id }}" data-nombre="{{ nucleo.nombre }}" data-precio="{{ nucleo.precio }}">
+                                        <div class="bg-blue-500 p-2 rounded">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                                <path d="M17.414 2.586a2 2 0 00-2.828 0L13 4.172 15.828 7l1.586-1.586a2 2 0 000-2.828zM12 5l3 3-9 9H3v-3l9-9z" />
+                                            </svg>
+                                        </div>
+                                    </a>
+                                    <a href="#" class="btn btn-delete-nucleo" data-id="{{ nucleo.id }}">
+                                        <div class="bg-red-500 p-2 rounded">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M8 4a1 1 0 011-1h2a1 1 0 011 1v1h5a1 1 0 110 2h-1v9a2 2 0 01-2 2H6a2 2 0 01-2-2V7H3a1 1 0 110-2h5V4zm1 3a1 1 0 00-1 1v7a1 1 0 102 0V8a1 1 0 00-1-1zm4 1a1 1 0 10-2 0v7a1 1 0 102 0V8z" clip-rule="evenodd" />
+                                            </svg>
+                                        </div>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td class="border px-4 py-2 text-center" colspan="3">No hay núcleos registrados.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -312,6 +360,44 @@
                             <tr>
                                 <td class="border px-4 py-2 text-center" colspan="2">No hay preparaciones de muestra registradas.</td>
                             </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% elif section == 'solicitudes_admin' %}
+                <h2 class="text-2xl font-bold mb-6">Gestión de Solicitudes</h2>
+                <table class="min-w-full bg-white">
+                    <thead>
+                        <tr>
+                            <th class="py-2 px-4 bg-gray-200 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Nombre de la muestra</th>
+                            <th class="py-2 px-4 bg-gray-200 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Nombre del usuario</th>
+                            <th class="py-2 px-4 bg-gray-200 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Nombre del proyecto</th>
+                            <th class="py-2 px-4 bg-gray-200 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Fecha</th>
+                            <th class="py-2 px-4 bg-gray-200 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Estado</th>
+                            <th class="py-2 px-4 bg-gray-200 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for solicitud in solicitudes %}
+                        <tr>
+                            <td class="py-2 px-4 border-b text-center">{{ solicitud.sample_name }}</td>
+                            <td class="py-2 px-4 border-b text-center">{{ solicitud.user_name }}</td>
+                            <td class="py-2 px-4 border-b text-center">{{ solicitud.project_name }}</td>
+                            <td class="py-2 px-4 border-b text-center">{{ solicitud.fecha.strftime('%Y-%m-%d') }}</td>
+                            <td class="py-2 px-4 border-b text-center">
+                                <form method="POST" action="{{ url_for('solicitudes.cambiar_estado', solicitud_id=solicitud.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <select name="estado" class="form-select bg-white border border-gray-300 text-gray-900 py-1.5 px-3 rounded-lg">
+                                        <option value="Pendiente" {% if solicitud.estado == 'Pendiente' %}selected{% endif %}>Pendiente</option>
+                                        <option value="Finalizado" {% if solicitud.estado == 'Finalizado' %}selected{% endif %}>Finalizado</option>
+                                    </select>
+                                    <button type="submit" class="text-blue-500 hover:underline ml-2">Actualizar</button>
+                                </form>
+                            </td>
+                            <td class="py-2 px-4 border-b text-center">
+                                <a href="{{ url_for('solicitudes.descargar', solicitud_id=solicitud.id) }}" class="text-blue-500 hover:underline">Descargar</a>
+                                <button class="delete-request-button text-red-500 hover:underline ml-2" data-id="{{ solicitud.id }}">Eliminar</button>
+                            </td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -669,6 +755,10 @@
                     <label for="sample_name" class="block text-gray-700">Nombre</label>
                     <input type="text" name="name" id="sample_name" class="w-full px-3 py-2 border rounded-lg" required>
                 </div>
+                <div class="mb-4">
+                    <label for="sample_price" class="block text-gray-700">Precio (UF)</label>
+                    <input type="number" name="price" id="sample_price" class="w-full px-3 py-2 border rounded-lg" step="0.01" min="0" required> <!-- Campo de precio -->
+                </div>
                 <div class="flex justify-end">
                     <button type="button" id="closeSampleModal" class="bg-gray-500 text-white py-2 px-4 rounded-lg mr-2">Cancelar</button>
                     <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded-lg">Crear</button>
@@ -688,6 +778,10 @@
                     <label for="edit_sample_name" class="block text-gray-700">Nombre</label>
                     <input type="text" name="name" id="edit_sample_name" class="w-full px-3 py-2 border rounded-lg" required>
                 </div>
+                <div class="mb-4">
+                    <label for="edit_sample_price" class="block text-gray-700">Precio (UF)</label>
+                    <input type="number" name="price" id="edit_sample_price" class="w-full px-3 py-2 border rounded-lg" step="0.01" min="0" required> <!-- Campo de precio -->
+                </div>
                 <div class="flex justify-end">
                     <button type="button" id="closeEditSampleModal" class="bg-gray-500 text-white py-2 px-4 rounded-lg mr-2">Cancelar</button>
                     <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-lg">Guardar Cambios</button>
@@ -705,6 +799,81 @@
                 <button type="button" id="cancelDeleteSample" class="bg-gray-500 text-white py-2 px-4 rounded-lg mr-2">Cancelar</button>
                 <button type="button" id="confirmDeleteSample" class="bg-red-500 text-white py-2 px-4 rounded-lg">Aceptar</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Create Nucleo Modal -->
+    <div id="nucleoModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-1/2">
+            <h2 class="text-2xl mb-4">Crear Núcleo</h2>
+            <form method="POST" action="{{ url_for('nucleo.crear_nucleo') }}" onsubmit="return closeModalOnSubmit('nucleoModal')">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="mb-4">
+                    <label for="nucleo_nombre" class="block text-gray-700">Nombre</label>
+                    <input type="text" name="nombre" id="nucleo_nombre" class="w-full px-3 py-2 border rounded-lg" required>
+                </div>
+                <div class="mb-4">
+                    <label for="nucleo_precio" class="block text-gray-700">Precio (UF)</label>
+                    <div class="flex items-center">
+                        <input type="number" step="0.01" name="precio" id="nucleo_precio" class="w-full px-3 py-2 border rounded-lg" required>
+                        <span class="ml-2">UF</span>
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <button type="button" id="closeNucleoModal" class="bg-gray-500 text-white py-2 px-4 rounded-lg mr-2">Cancelar</button>
+                    <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded-lg">Crear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Edit Nucleo Modal -->
+    <div id="editNucleoModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-1/2">
+            <h2 class="text-2xl mb-4">Editar Núcleo</h2>
+            <form id="editNucleoForm" method="POST" action="{{ url_for('nucleo.editar_nucleo') }}" onsubmit="return closeModalOnSubmit('editNucleoModal')">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="id" id="edit_nucleo_id">
+                <div class="mb-4">
+                    <label for="edit_nucleo_nombre" class="block text-gray-700">Nombre</label>
+                    <input type="text" name="nombre" id="edit_nucleo_nombre" class="w-full px-3 py-2 border rounded-lg" required>
+                </div>
+                <div class="mb-4">
+                    <label for="edit_nucleo_precio" class="block text-gray-700">Precio (UF)</label>
+                    <div class="flex items-center">
+                        <input type="number" step="0.01" name="precio" id="edit_nucleo_precio" class="w-full px-3 py-2 border rounded-lg" required>
+                        <span class="ml-2">UF</span>
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <button type="button" id="closeEditNucleoModal" class="bg-gray-500 text-white py-2 px-4 rounded-lg mr-2">Cancelar</button>
+                    <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-lg">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Delete Nucleo Modal -->
+    <div id="confirmNucleoModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
+            <h2 class="text-2xl mb-4">Confirmación</h2>
+            <p>¿Estás seguro de que quieres eliminar este núcleo?</p>
+            <div class="flex justify-end mt-4">
+                <button type="button" id="cancelNucleoDelete" class="bg-gray-500 text-white py-2 px-4 rounded-lg mr-2">Cancelar</button>
+                <button type="button" id="confirmNucleoDelete" class="bg-red-500 text-white py-2 px-4 rounded-lg">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación para eliminar solicitud -->
+    <div id="confirmRequestModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-lg font-semibold mb-4">Confirmar eliminación</h2>
+            <p class="mb-4">¿Estás seguro de que deseas eliminar esta solicitud?</p>
+            <button id="cancelDeleteRequest" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">Cancelar</button>
+            <button id="confirmDeleteRequest" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Eliminar</button>
         </div>
     </div>
 

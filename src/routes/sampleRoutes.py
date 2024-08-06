@@ -15,7 +15,15 @@ def muestras():
 @login_required
 def crear_muestra():
     name = request.form.get('name')
-    new_sample = Sample(name=name)
+    price = request.form.get('price')  # Obtener el precio del formulario
+
+    try:
+        price = float(price)
+    except ValueError:
+        flash('El precio debe ser un número.', 'danger')
+        return redirect(url_for('sample.muestras'))
+
+    new_sample = Sample(name=name, price=price)
     db.session.add(new_sample)
     db.session.commit()
     flash('Muestra creada con éxito', 'success')
@@ -26,7 +34,20 @@ def crear_muestra():
 def editar_muestra():
     sample_id = request.form.get('id')
     sample = Sample.query.get(sample_id)
+
+    if not sample:
+        flash('Muestra no encontrada.', 'danger')
+        return redirect(url_for('sample.muestras'))
+
     sample.name = request.form.get('name')
+    price = request.form.get('price')  # Obtener el precio del formulario
+
+    try:
+        sample.price = float(price)
+    except ValueError:
+        flash('El precio debe ser un número.', 'danger')
+        return redirect(url_for('sample.muestras'))
+
     db.session.commit()
     flash('Muestra actualizada con éxito', 'success')
     return redirect(url_for('sample.muestras'))
