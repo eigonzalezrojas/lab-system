@@ -31,6 +31,17 @@
         </div>
         <!-- Content -->
         <div class="flex-1 p-10 text-2xl font-bold">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                <div class="flash-messages mb-4">
+                  {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} p-4 mb-4 rounded-lg">
+                      {{ message }}
+                    </div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
             {% if section == 'solicitudes' %}
                 <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg">
                     <h2 class="text-2xl font-bold mb-6 text-center">Nueva Solicitud</h2>
@@ -204,7 +215,6 @@
                         </tbody>
                     </table>
                 </div>
-
             {% else %}
                 Welcome to the User Dashboard!
             {% endif %}

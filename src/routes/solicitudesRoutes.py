@@ -87,7 +87,7 @@ def agregar_solicitud():
         sample_preparation_name=SamplePreparation.query.get(sample_preparation_id).name,
         sample_name=sample_name,
         request_name=sample_name,
-        price=total_price,  # Guardar el precio total
+        price=total_price,
         estado='Pendiente'
     )
 
@@ -95,7 +95,7 @@ def agregar_solicitud():
     db.session.commit()
 
     flash('Solicitud agregada con éxito', 'success')
-    return redirect(url_for('solicitudes.solicitudes'))
+    return redirect(url_for('home.home_operator'))
 
 
 @solicitudes_bp.route('/descargar/<int:solicitud_id>', methods=['GET'])
