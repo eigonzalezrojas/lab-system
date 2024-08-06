@@ -61,11 +61,28 @@ def agregar_solicitud():
     # Calcular el precio total
     total_price = sum(sample.price for sample in samples) + sum(nucleo.precio for nucleo in nucleos)
 
+    # Verificar el proyecto
+    project_id = request.form.get('project_id')
+    project = Project.query.get(project_id)
+
+    if project is None:
+        flash('Proyecto no encontrado.', 'danger')
+        return redirect(url_for('solicitudes.solicitudes'))
+
+    # Verificar si el total de la solicitud excede el fondo del proyecto
+    if total_price > project.fondo:
+        flash('El monto de la solicitud excede el fondo del proyecto.', 'danger')
+        return redirect(url_for('solicitudes.solicitudes'))
+
+    # Restar el total de la solicitud del fondo del proyecto
+    project.fondo -= total_price
+    db.session.commit()
+
     # Crear una nueva solicitud
     nueva_solicitud = Request(
         user_name=current_user.first_name + " " + current_user.last_name,
         user_rut=current_user.rut,
-        project_name=request.form.get('project_name'),
+        project_name=project.name,
         solvent_name=Solvent.query.get(solvent_id).name,
         sample_preparation_name=SamplePreparation.query.get(sample_preparation_id).name,
         sample_name=sample_name,

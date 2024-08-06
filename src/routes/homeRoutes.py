@@ -24,8 +24,14 @@ def get_statistics():
 def get_operator_statistics():
     total_solicitudes = Request.query.count()
     total_proyectos = Project.query.count()
+
+    # Calcular la suma de los fondos restantes
     suma_fondos = db.session.query(db.func.sum(Project.fondo)).scalar()
+    suma_fondos = round(float(suma_fondos or 0), 2)
+
+    # Obtener todas las solicitudes para mostrar en la tabla
     solicitudes = Request.query.all()
+
     return {
         'total_solicitudes': total_solicitudes,
         'total_proyectos': total_proyectos,
