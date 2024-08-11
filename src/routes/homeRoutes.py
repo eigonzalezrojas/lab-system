@@ -36,7 +36,8 @@ def home():
 @login_required
 def home_operator():
     stats = get_operator_statistics()
-    return render_template('operador_dashboard.html', section='home', **stats)
+    solicitudes = Request.query.all()
+    return render_template('operador_dashboard.html', section='home', solicitudes=solicitudes, **stats)
 
 def get_operator_statistics():
     total_solicitudes = Request.query.count()
@@ -51,3 +52,4 @@ def get_operator_statistics():
         'total_proyectos': total_proyectos,
         'suma_fondos': suma_fondos,
     }
+
