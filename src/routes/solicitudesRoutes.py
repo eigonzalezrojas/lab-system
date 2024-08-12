@@ -1,9 +1,11 @@
 from flask import Blueprint, render_template, request, make_response, redirect, url_for, flash
 from flask_login import login_required, current_user
-from src.models import Project, Machine, Solvent, SamplePreparation, Sample, Request, Nucleo
+from src.models import Project, Machine, Solvent, SamplePreparation, Sample, Request, Nucleo, UserAccount, UserRole
 from src import db
 from fpdf import FPDF
+from .authRoutes import send_email
 from datetime import datetime
+import pytz
 
 solicitudes_bp = Blueprint('solicitudes', __name__)
 
@@ -45,7 +47,11 @@ def nueva_solicitud():
 @solicitudes_bp.route('/agregar_solicitud', methods=['POST'])
 @login_required
 def agregar_solicitud():
-    sample_name = request.form.get('sample_name')  # Obtener el nombre de la muestra desde el formulario
+    # Configurar la zona horaria de Santiago
+    timezone = pytz.timezone('America/Santiago')
+    current_time = datetime.now(timezone)
+
+    sample_name = request.form.get('sample_name')
     solvent_id = request.form.get('solvent_id')
     sample_preparation_id = request.form.get('sample_preparation_id')
     recovery = request.form.get('recovery')
@@ -70,15 +76,37 @@ def agregar_solicitud():
         solvent_name=Solvent.query.get(solvent_id).name,
         sample_preparation_name=SamplePreparation.query.get(sample_preparation_id).name,
         recovery=recovery,
-        request_name=request_name,  # Asignar request_name basado en el nombre de la muestra
+        request_name=request_name,
         sample_ids=','.join(sample_ids),
         nucleo_ids=','.join(nucleo_ids),
         total_cost=total_cost,
-        estado='Pendiente'
+        estado='Pendiente',
+        fecha = current_time
     )
 
     db.session.add(nueva_solicitud)
     db.session.commit()
+
+    # Obtener correos de los administradores
+    admin_users = UserAccount.query.join(UserRole).filter(UserRole.name == 'administrador').all()
+    admin_emails = [user.email for user in admin_users]
+
+    # Enviar correo a los administradores
+    subject = "Nueva Solicitud Creada"
+    body = f"""
+            Una nueva solicitud ha sido creada en el sistema.
+
+            Detalles de la Solicitud:
+            - Nombre del Usuario: {nueva_solicitud.user_name}
+            - Proyecto: {nueva_solicitud.project_name}
+            - Muestra: {nueva_solicitud.request_name}
+            - Fecha: {nueva_solicitud.fecha}
+
+            Por favor, revisa la solicitud en el sistema.
+            """
+
+    for email in admin_emails:
+        send_email(subject, email, body)
 
     flash('Solicitud agregada con éxito', 'success')
     return redirect(url_for('solicitudes.solicitudes'))
