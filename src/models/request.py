@@ -11,11 +11,15 @@ class Request(db.Model):
     project_name = db.Column(db.String(64), nullable=False)
     solvent_name = db.Column(db.String(64), nullable=False)
     sample_preparation_name = db.Column(db.String(64), nullable=False)
-    sample_name = db.Column(db.String(64), nullable=False)
     fecha = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    recovery = db.Column(db.String(3), nullable=False)
     request_name = db.Column(db.String(64), nullable=False)
-    price = db.Column(db.Float, nullable=False)
     estado = db.Column(db.String(20), nullable=False, default='Pendiente')
 
+    # Nuevos campos
+    sample_ids = db.Column(db.String(256), nullable=False)
+    nucleo_ids = db.Column(db.String(256), nullable=False)
+    total_cost = db.Column(db.Float, nullable=False)
+
     def __repr__(self):
-        return f'<Request {self.request_name} - Estado: {self.estado}>'
+        return f'<Request {self.project_name} - Estado: {self.estado}>'
