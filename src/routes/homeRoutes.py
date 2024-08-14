@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template
 from flask_login import login_required
-from src.models import UserAccount, Project, Machine, Solvent, Sample, SamplePreparation, Request, Nucleo
+from src.models import UserAccount, Project, Machine, Solvent, Sample, SamplePreparation, Request, Nucleo, Invoice
 from src import db
 
 home_bp = Blueprint('home', __name__)
@@ -41,15 +41,12 @@ def home_operator():
 
 def get_operator_statistics():
     total_solicitudes = Request.query.count()
+    total_facturas = Invoice.query.count()
     total_proyectos = Project.query.count()
-
-    # Calcular la suma de los fondos restantes
-    suma_fondos = db.session.query(db.func.sum(Project.fondo)).scalar()
-    suma_fondos = round(float(suma_fondos or 0), 2)
 
     return {
         'total_solicitudes': total_solicitudes,
-        'total_proyectos': total_proyectos,
-        'suma_fondos': suma_fondos,
+        'total_facturas': total_facturas,
+        'total_proyectos': total_proyectos
     }
 
