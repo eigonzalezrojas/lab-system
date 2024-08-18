@@ -125,6 +125,15 @@ def descargar(solicitud_id):
     pdf = FPDF()
     pdf.add_page()
 
+    # Agregar logo y frase
+    logo_path = 'src/static/img/utal.png'
+    pdf.image(logo_path, x=10, y=8, w=30)
+    pdf.set_font("Arial", size=12)
+    pdf.cell(0, 10, 'Instituto de Química de Recursos Naturales', ln=True, align='C')
+
+    # Espacio debajo del logo y frase
+    pdf.ln(10)
+
     # Reducir el tamaño de la fuente
     pdf.set_font("Arial", size=8)
 
