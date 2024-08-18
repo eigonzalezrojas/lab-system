@@ -6,6 +6,7 @@ class Sample(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), nullable=False)
     price = db.Column(db.Float, nullable=False, default=0.0)
+    miligramos = db.Column(db.Integer, nullable=False, default=0)
 
     def __repr__(self):
         return f'<Sample {self.name}>'
