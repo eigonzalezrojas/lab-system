@@ -35,17 +35,17 @@
             <form method="POST" action="{{ url_for('auth.login') }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="mb-4">
-                    <label for="rut" class="block text-gray-700">RUT</label>
-                    <input type="text" name="rut" id="rut" class="w-full px-3 py-2 border rounded-lg" required>
+                    <label for="rut" class="block text-gray-700">Rut</label>
+                    <input type="text" name="rut" id="rut" placeholder="12345678-9"  class="w-full px-3 py-2 border rounded-lg" required>
                 </div>
                 <div class="mb-4">
-                    <label for="password" class="block text-gray-700">Password</label>
+                    <label for="password" class="block text-gray-700">Contraseña</label>
                     <input type="password" name="password" id="password" class="w-full px-3 py-2 border rounded-lg" required>
                 </div>
-                <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg">Login</button>
+                <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg">Ingresar</button>
             </form>
             <div class="mt-4 text-center">
-                <a href="{{ url_for('auth.forgot_password') }}" class="text-blue-500">Forgot Password?</a>
+                <a href="{{ url_for('auth.forgot_password') }}" class="text-blue-500">Olvidé Contraseña</a>
             </div>
         </div>
     </div>
