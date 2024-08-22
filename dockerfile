@@ -7,6 +7,10 @@ WORKDIR /app
 # Copia el archivo de dependencias en el contenedor
 COPY requirements.txt requirements.txt
 
+# Crea y activa un entorno virtual
+RUN python -m venv venv
+ENV PATH="/app/venv/bin:$PATH"
+
 # Instala las dependencias del proyecto
 RUN pip install --no-cache-dir -r requirements.txt
 
