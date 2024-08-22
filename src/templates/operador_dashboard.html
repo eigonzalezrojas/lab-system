@@ -171,7 +171,7 @@
                     </form>
                 </div>
             {% elif section == 'home' %}
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mb-6">
                     <div class="bg-blue-500 text-white p-6 rounded-lg shadow-lg">
                         <h2 class="text-2xl">Solicitudes</h2>
                         <p class="text-4xl">{{ total_solicitudes }}</p>
@@ -179,6 +179,10 @@
                     <div class="bg-green-500 text-white p-6 rounded-lg shadow-lg">
                         <h2 class="text-2xl">Proyectos</h2>
                         <p class="text-4xl">{{ total_proyectos }}</p>
+                    </div>
+                    <div class="bg-purple-500 text-white p-6 rounded-lg shadow-lg">
+                        <h2 class="text-2xl">Total Facturas</h2>
+                        <p class="text-4xl">{{ total_facturas }}</p>
                     </div>
                 </div>
                 <!-- Tabla de solicitudes -->
