@@ -11,8 +11,8 @@ COPY requirements.txt requirements.txt
 RUN python -m venv venv
 ENV PATH="/app/venv/bin:$PATH"
 
-# Instala las dependencias del proyecto
-RUN pip install --no-cache-dir -r requirements.txt
+# Instala las dependencias del proyecto en el entorno virtual
+RUN /app/venv/bin/pip install --no-cache-dir -r requirements.txt
 
 # Copia el resto del código fuente del proyecto en el contenedor
 COPY . .
