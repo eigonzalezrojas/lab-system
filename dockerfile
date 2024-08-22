@@ -20,5 +20,5 @@ COPY . .
 # Especifica el puerto en el que la aplicación estará disponible
 EXPOSE 5000
 
-# Utiliza Gunicorn con 4 workers, enlazando al puerto 5000
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "src:app"]
+
+CMD ["python", "run.py"]
