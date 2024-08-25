@@ -141,12 +141,15 @@ def descargar(solicitud_id):
     total_width = 190  # El ancho total de una página A4 menos márgenes
     static_columns_width = 20 + 20 + 20 + 15 + 20  # Ancho de las columnas estáticas (Nombre, Solvente, etc.)
 
-    # Obtener todas las muestras y núcleos
-    all_samples = Sample.query.all()
-    all_nucleos = Nucleo.query.all()
+    # Filtrar muestras y núcleos seleccionados
+    selected_sample_ids = solicitud.sample_ids.split(',')
+    selected_samples = Sample.query.filter(Sample.id.in_(selected_sample_ids)).all()
 
-    # Número de columnas dinámicas (muestras + núcleos)
-    num_dynamic_columns = len(all_samples) + len(all_nucleos)
+    selected_nucleo_ids = solicitud.nucleo_ids.split(',')
+    selected_nucleos = Nucleo.query.filter(Nucleo.id.in_(selected_nucleo_ids)).all()
+
+    # Calcular el número de columnas dinámicas (muestras seleccionadas + núcleos seleccionados)
+    num_dynamic_columns = len(selected_samples) + len(selected_nucleos)
 
     # Calcular el ancho de cada columna dinámica
     if num_dynamic_columns > 0:
@@ -180,56 +183,45 @@ def descargar(solicitud_id):
     pdf.cell(20, 6, txt="Preparación", border=1, align='C')
     pdf.cell(15, 6, txt="Recup.", border=1, align='C')
 
-    # Añadir cabecera de muestras
-    for sample in all_samples:
+    # Añadir cabecera de muestras seleccionadas
+    for sample in selected_samples:
         pdf.cell(dynamic_column_width, 6, txt=sample.name[:7], border=1, align='C')
 
-    # Añadir cabecera de núcleos
-    for nucleo in all_nucleos:
+    # Añadir cabecera de núcleos seleccionados
+    for nucleo in selected_nucleos:
         pdf.cell(dynamic_column_width, 6, txt=nucleo.nombre[:7], border=1, align='C')
 
     pdf.cell(20, 6, txt="Total (UF)", border=1, align='C', ln=True)
 
-    # Inicializar contadores para el total de muestras y total de la orden
-    total_muestras = 0
+    # Inicializar el total de la orden
     total_orden = 0
 
-    # Fila de datos para cada solicitud asociada al proyecto
-    for solicitud in solicitudes:
-        pdf.cell(20, 6, txt=f"{solicitud.request_name}", border=1, align='C')
-        pdf.cell(20, 6, txt=f"{solicitud.solvent_name}", border=1, align='C')
-        pdf.cell(20, 6, txt=f"{solicitud.sample_preparation_name}", border=1, align='C')
-        pdf.cell(15, 6, txt=f"{'Sí' if solicitud.recovery == 'si' else 'No'}", border=1, align='C')
+    # Fila de datos para la solicitud
+    pdf.cell(20, 6, txt=f"{solicitud.request_name}", border=1, align='C')
+    pdf.cell(20, 6, txt=f"{solicitud.solvent_name}", border=1, align='C')
+    pdf.cell(20, 6, txt=f"{solicitud.sample_preparation_name}", border=1, align='C')
+    pdf.cell(15, 6, txt=f"{'Sí' if solicitud.recovery == 'si' else 'No'}", border=1, align='C')
 
-        # Fila de "X" o vacío para muestras
-        selected_sample_ids = solicitud.sample_ids.split(',')
-        total_muestras += len(selected_sample_ids)
-        for sample in all_samples:
-            if str(sample.id) in selected_sample_ids:
-                pdf.cell(dynamic_column_width, 6, txt="X", border=1, align='C')
-            else:
-                pdf.cell(dynamic_column_width, 6, txt="", border=1, align='C')
+    # Fila de "X" para muestras seleccionadas
+    for sample in selected_samples:
+        pdf.cell(dynamic_column_width, 6, txt="X", border=1, align='C')
 
-        # Fila de "X" o vacío para núcleos
-        selected_nucleo_ids = solicitud.nucleo_ids.split(',')
-        for nucleo in all_nucleos:
-            if str(nucleo.id) in selected_nucleo_ids:
-                pdf.cell(dynamic_column_width, 6, txt="X", border=1, align='C')
-            else:
-                pdf.cell(dynamic_column_width, 6, txt="", border=1, align='C')
+    # Fila de "X" para núcleos seleccionados
+    for nucleo in selected_nucleos:
+        pdf.cell(dynamic_column_width, 6, txt="X", border=1, align='C')
 
-        # Sumar el total de la solicitud al total de la orden
-        total_orden += solicitud.total_cost
-        pdf.cell(20, 6, txt=f"{solicitud.total_cost} UF", border=1, align='C', ln=True)
+    # Sumar el total de la solicitud al total de la orden
+    total_orden += solicitud.total_cost
+    pdf.cell(20, 6, txt=f"{solicitud.total_cost} UF", border=1, align='C', ln=True)
 
     pdf.ln(10)
 
-    # Calcular posición centrada para "N° de muestras" y "Total orden"
+    # Calcular posición centrada para "Total orden"
     left_margin = (210 - (50 + 100)) / 2  # 210 es el ancho de una página A4 en mm
 
-    # Centrar la sección de "N° de muestras" y "Total orden"
+    # Centrar la sección de "Total orden"
     pdf.set_x(left_margin)
-    pdf.cell(50, 6, txt=f"N° de muestras: {total_muestras}", border=1, align='L')
+    pdf.cell(50, 6, txt=f"N° de muestras: {len(selected_samples)}", border=1, align='L')
     pdf.cell(100, 6, txt=f"Total orden: {total_orden} UF", border=1, align='R', ln=True)
 
     response = make_response(pdf.output(dest='S').encode('latin1'))
