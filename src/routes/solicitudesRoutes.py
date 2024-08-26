@@ -117,8 +117,8 @@ def descargar(solicitud_id):
     # Obtener la solicitud seleccionada
     solicitud = Request.query.get_or_404(solicitud_id)
 
-    # Obtener todas las solicitudes asociadas al mismo proyecto
-    solicitudes = Request.query.filter_by(project_name=solicitud.project_name).all()
+    # Obtener todas las solicitudes asociadas al mismo proyecto y operador
+    solicitudes = Request.query.filter_by(project_name=solicitud.project_name, user_rut=current_user.rut).all()
 
     # Crear PDF
     pdf = FPDF()
@@ -140,14 +140,23 @@ def descargar(solicitud_id):
     total_width = 190  # El ancho total de una página A4 menos márgenes
     static_columns_width = 20 + 20 + 20 + 15 + 20  # Ancho de las columnas estáticas (Nombre, Solvente, etc.)
 
-    # Filtrar muestras y núcleos seleccionados
-    selected_sample_ids = solicitud.sample_ids.split(',')
-    selected_samples = Sample.query.filter(Sample.id.in_(selected_sample_ids)).all()
+    # Inicializar un conjunto para evitar duplicados de muestras y núcleos
+    unique_sample_ids = set()
+    unique_nucleo_ids = set()
 
-    selected_nucleo_ids = solicitud.nucleo_ids.split(',')
-    selected_nucleos = Nucleo.query.filter(Nucleo.id.in_(selected_nucleo_ids)).all()
+    # Recorrer todas las solicitudes para agregar las muestras y núcleos seleccionados
+    for solicitud in solicitudes:
+        selected_sample_ids = solicitud.sample_ids.split(',')
+        selected_nucleo_ids = solicitud.nucleo_ids.split(',')
 
-    # Calcular el número de columnas dinámicas (muestras seleccionadas + núcleos seleccionados)
+        unique_sample_ids.update(selected_sample_ids)
+        unique_nucleo_ids.update(selected_nucleo_ids)
+
+    # Obtener muestras y núcleos únicos
+    selected_samples = Sample.query.filter(Sample.id.in_(unique_sample_ids)).all()
+    selected_nucleos = Nucleo.query.filter(Nucleo.id.in_(unique_nucleo_ids)).all()
+
+    # Calcular el número de columnas dinámicas (muestras únicas + núcleos únicos)
     num_dynamic_columns = len(selected_samples) + len(selected_nucleos)
 
     # Calcular el ancho de cada columna dinámica
@@ -182,11 +191,11 @@ def descargar(solicitud_id):
     pdf.cell(20, 6, txt="Preparación", border=1, align='C')
     pdf.cell(15, 6, txt="Recup.", border=1, align='C')
 
-    # Añadir cabecera de muestras seleccionadas
+    # Añadir cabecera de muestras únicas
     for sample in selected_samples:
         pdf.cell(dynamic_column_width, 6, txt=sample.name[:7], border=1, align='C')
 
-    # Añadir cabecera de núcleos seleccionados
+    # Añadir cabecera de núcleos únicos
     for nucleo in selected_nucleos:
         pdf.cell(dynamic_column_width, 6, txt=nucleo.nombre[:7], border=1, align='C')
 
@@ -195,32 +204,39 @@ def descargar(solicitud_id):
     # Inicializar el total de la orden
     total_orden = 0
 
-    # Fila de datos para la solicitud
-    pdf.cell(20, 6, txt=f"{solicitud.request_name}", border=1, align='C')
-    pdf.cell(20, 6, txt=f"{solicitud.solvent_name}", border=1, align='C')
-    pdf.cell(20, 6, txt=f"{solicitud.sample_preparation_name}", border=1, align='C')
-    pdf.cell(15, 6, txt=f"{'Sí' if solicitud.recovery == 'si' else 'No'}", border=1, align='C')
+    # Fila de datos para cada solicitud asociada al proyecto y operador
+    for solicitud in solicitudes:
+        pdf.cell(20, 6, txt=f"{solicitud.request_name}", border=1, align='C')
+        pdf.cell(20, 6, txt=f"{solicitud.solvent_name}", border=1, align='C')
+        pdf.cell(20, 6, txt=f"{solicitud.sample_preparation_name}", border=1, align='C')
+        pdf.cell(15, 6, txt=f"{'Sí' if solicitud.recovery == 'si' else 'No'}", border=1, align='C')
 
-    # Fila de "X" para muestras seleccionadas
-    for sample in selected_samples:
-        pdf.cell(dynamic_column_width, 6, txt="X", border=1, align='C')
+        # Fila de "X" para muestras seleccionadas en esta solicitud
+        for sample in selected_samples:
+            if str(sample.id) in solicitud.sample_ids.split(','):
+                pdf.cell(dynamic_column_width, 6, txt="X", border=1, align='C')
+            else:
+                pdf.cell(dynamic_column_width, 6, txt="", border=1, align='C')
 
-    # Fila de "X" para núcleos seleccionados
-    for nucleo in selected_nucleos:
-        pdf.cell(dynamic_column_width, 6, txt="X", border=1, align='C')
+        # Fila de "X" para núcleos seleccionados en esta solicitud
+        for nucleo in selected_nucleos:
+            if str(nucleo.id) in solicitud.nucleo_ids.split(','):
+                pdf.cell(dynamic_column_width, 6, txt="X", border=1, align='C')
+            else:
+                pdf.cell(dynamic_column_width, 6, txt="", border=1, align='C')
 
-    # Sumar el total de la solicitud al total de la orden
-    total_orden += solicitud.total_cost
-    pdf.cell(20, 6, txt=f"{solicitud.total_cost} UF", border=1, align='C', ln=True)
+        # Sumar el total de la solicitud al total de la orden
+        total_orden += solicitud.total_cost
+        pdf.cell(20, 6, txt=f"{solicitud.total_cost} UF", border=1, align='C', ln=True)
 
     pdf.ln(10)
 
-    # Calcular posición centrada para "Total orden"
+    # Calcular posición centrada para "N° de muestras" y "Total orden"
     left_margin = (210 - (50 + 100)) / 2  # 210 es el ancho de una página A4 en mm
 
-    # Centrar la sección de "Total orden"
+    # Centrar la sección de "N° de muestras" y "Total orden"
     pdf.set_x(left_margin)
-    pdf.cell(50, 6, txt=f"N° de muestras: {len(selected_samples)}", border=1, align='L')
+    pdf.cell(50, 6, txt=f"N° de solicitudes: {len(solicitudes)}", border=1, align='L')
     pdf.cell(100, 6, txt=f"Total orden: {total_orden} UF", border=1, align='R', ln=True)
 
     response = make_response(pdf.output(dest='S').encode('latin1'))
