@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template
-from flask_login import login_required
+from flask_login import login_required, current_user
 from src.models import UserAccount, Project, Machine, Solvent, Sample, SamplePreparation, Request, Nucleo, Invoice
 from src import db
 
@@ -32,21 +32,30 @@ def home():
     stats = get_statistics()
     return render_template('admin_dashboard.html', section='home', **stats)
 
+
 @home_bp.route('/home_operator')
 @login_required
 def home_operator():
-    stats = get_operator_statistics()
-    solicitudes = Request.query.all()
+    # Filtrar las solicitudes asociadas al operador actual por su RUT
+    solicitudes = Request.query.filter_by(user_rut=current_user.rut).all()
+
+    # Pasar las solicitudes filtradas a la función get_operator_statistics
+    stats = get_operator_statistics(solicitudes)
+
     return render_template('operador_dashboard.html', section='home', solicitudes=solicitudes, **stats)
 
-def get_operator_statistics():
-    total_solicitudes = Request.query.count()
-    total_facturas = Invoice.query.count()
+
+def get_operator_statistics(solicitudes):
+    total_solicitudes = len(solicitudes)
     total_proyectos = Project.query.count()
+
+    # Calcular el total de facturas (sumando el costo total de las solicitudes)
+    total_facturas = sum(solicitud.total_cost for solicitud in solicitudes)
 
     return {
         'total_solicitudes': total_solicitudes,
+        'total_proyectos': total_proyectos,
         'total_facturas': total_facturas,
-        'total_proyectos': total_proyectos
     }
+
 

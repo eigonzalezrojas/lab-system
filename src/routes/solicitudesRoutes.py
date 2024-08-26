@@ -111,7 +111,6 @@ def agregar_solicitud():
     flash('Solicitud agregada con éxito', 'success')
     return redirect(url_for('solicitudes.solicitudes'))
 
-
 @solicitudes_bp.route('/descargar/<int:solicitud_id>', methods=['GET'])
 @login_required
 def descargar(solicitud_id):
@@ -228,7 +227,6 @@ def descargar(solicitud_id):
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = f'attachment; filename=solicitud_{solicitud.id}.pdf'
     return response
-
 
 @solicitudes_bp.route('/solicitudes_admin')
 @login_required
