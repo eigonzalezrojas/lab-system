@@ -371,6 +371,7 @@
                             <th class="py-2 px-4 bg-gray-200 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Nombre de la muestra</th>
                             <th class="py-2 px-4 bg-gray-200 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Nombre del usuario</th>
                             <th class="py-2 px-4 bg-gray-200 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Nombre del proyecto</th>
+                            <th class="py-2 px-4 bg-gray-200 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Máquina</th>
                             <th class="py-2 px-4 bg-gray-200 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Fecha</th>
                             <th class="py-2 px-4 bg-gray-200 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Estado</th>
                             <th class="py-2 px-4 bg-gray-200 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Acciones</th>
@@ -394,7 +395,7 @@
                                 </form>
                             </td>
                             <td class="py-2 px-4 border-b text-center">
-                                <a href="{{ url_for('solicitudes.descargar', solicitud_id=solicitud.id) }}" class="text-blue-500 hover:underline">Descargar</a>
+                                <a href="{{ url_for('solicitudes.admin_descargar', solicitud_id=solicitud.id) }}" class="text-blue-500 hover:underline">Descargar</a>
                                 <button class="delete-request-button text-red-500 hover:underline ml-2" data-id="{{ solicitud.id }}">Eliminar</button>
                             </td>
                         </tr>

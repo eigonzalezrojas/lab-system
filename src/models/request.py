@@ -9,14 +9,13 @@ class Request(db.Model):
     user_name = db.Column(db.String(128), nullable=False)
     user_rut = db.Column(db.String(12), nullable=False)
     project_name = db.Column(db.String(64), nullable=False)
+    machine_name = db.Column(db.String(64), nullable=False)
     solvent_name = db.Column(db.String(64), nullable=False)
     sample_preparation_name = db.Column(db.String(64), nullable=False)
     fecha = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     recovery = db.Column(db.String(3), nullable=False)
     request_name = db.Column(db.String(64), nullable=False)
     estado = db.Column(db.String(20), nullable=False, default='Pendiente')
-
-    # Nuevos campos
     sample_ids = db.Column(db.String(256), nullable=False)
     nucleo_ids = db.Column(db.String(256), nullable=False)
     total_cost = db.Column(db.Float, nullable=False)
