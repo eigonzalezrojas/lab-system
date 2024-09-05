@@ -10,7 +10,9 @@
     <div class="min-h-screen flex items-center justify-center">
         <div class="max-w-md w-full bg-white p-8 rounded-lg shadow-lg">
             <div class="text-center mb-6">
-                <img src="{{ url_for('static', filename='img/utal.png') }}" alt="Logo UTalca" style="display: block; margin: auto; width: 50%; height: auto;">
+                <a href="http://192.241.147.59/">
+                    <img src="{{ url_for('static', filename='img/logo-iqrn.png') }}" alt="Logo UTalca" style="display: block; margin: auto; width: 100%; height: auto;">
+                </a>
             </div>
             <h2 class="text-2xl font-bold mb-6 text-center">Inicio Sesión</h2>
             {% with messages = get_flashed_messages(with_categories=true) %}
