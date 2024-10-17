@@ -1,6 +1,7 @@
 from src import db
 from datetime import datetime
 
+
 class Request(db.Model):
     __tablename__ = 'requests'
     __table_args__ = {'extend_existing': True}

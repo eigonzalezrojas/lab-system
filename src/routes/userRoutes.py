@@ -1,81 +1,49 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required
-from src.models import UserAccount, UserRole
-from src import db
-import random
-import string
-from .authRoutes import send_email
+from src.services.user_service import get_all_users, get_all_roles, create_user, update_user, delete_user
+from src.services.email_service import send_email
 
 user_bp = Blueprint('user', __name__)
+
 
 @user_bp.route('/usuarios')
 @login_required
 def usuarios():
-    usuarios = UserAccount.query.all()
-    roles = UserRole.query.all()
+    usuarios = get_all_users()  # Usar el servicio para obtener todos los usuarios
+    roles = get_all_roles()  # Usar el servicio para obtener todos los roles
     return render_template('admin_dashboard.html', section='usuarios', usuarios=usuarios, roles=roles)
+
 
 @user_bp.route('/crear_usuario', methods=['POST'])
 @login_required
 def crear_usuario():
-    rut = request.form['rut']
-    first_name = request.form['first_name']
-    last_name = request.form['last_name']
-    phone = request.form['phone']
-    email = request.form['email']
-    role_id = request.form['role_id']
+    success, result = create_user(request.form)  # Usar el servicio para crear un nuevo usuario
 
-    user = UserAccount.query.filter_by(rut=rut).first()
-    if user:
-        flash('El usuario con este RUT ya está registrado.', 'danger')
-        return redirect(url_for('user.usuarios'))
+    if success:
+        subject = "Bienvenido al sistema"
+        body = f"Su contraseña temporal es: {result}"
+        send_email(subject, request.form['email'], body)  # Enviar el correo al nuevo usuario
+        flash('Usuario creado exitosamente y contraseña enviada por correo.', 'success')
+    else:
+        flash(result, 'danger')
 
-    temporary_password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
-    new_user = UserAccount(
-        rut=rut,
-        first_name=first_name,
-        last_name=last_name,
-        phone=phone,
-        email=email,
-        role_id=role_id
-    )
-    new_user.set_password(temporary_password)
-    db.session.add(new_user)
-    db.session.commit()
-
-    subject = "Bienvenido al sistema"
-    body = f"Su contraseña temporal es: {temporary_password}"
-    send_email(subject, email, body)
-
-    flash('Usuario creado exitosamente y contraseña enviada por correo.', 'success')
     return redirect(url_for('user.usuarios'))
+
 
 @user_bp.route('/editar_usuario', methods=['POST'])
 @login_required
 def editar_usuario():
-    original_rut = request.form['original_rut']
-    user = UserAccount.query.filter_by(rut=original_rut).first()
-    if user:
-        user.rut = request.form['rut']
-        user.first_name = request.form['first_name']
-        user.last_name = request.form['last_name']
-        user.phone = request.form['phone']
-        user.email = request.form['email']
-        user.role_id = request.form['role_id']
-
-        db.session.commit()
+    if update_user(request.form):  # Usar el servicio para actualizar el usuario
         flash('Usuario actualizado exitosamente.', 'success')
     else:
         flash('Usuario no encontrado.', 'danger')
     return redirect(url_for('user.usuarios'))
 
+
 @user_bp.route('/eliminar_usuario/<rut>', methods=['DELETE'])
 @login_required
 def eliminar_usuario(rut):
-    user = UserAccount.query.filter_by(rut=rut).first()
-    if user:
-        db.session.delete(user)
-        db.session.commit()
+    if delete_user(rut):  # Usar el servicio para eliminar el usuario
         flash('Usuario eliminado exitosamente.', 'success')
         return jsonify(success=True)
     else:

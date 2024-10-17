@@ -13,6 +13,7 @@ migrate = Migrate()
 login = LoginManager()
 csrf = CSRFProtect()
 
+
 def create_app():
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
@@ -39,5 +40,6 @@ def create_app():
         return redirect(url_for('auth.login'))
 
     return app
+
 
 app = create_app()

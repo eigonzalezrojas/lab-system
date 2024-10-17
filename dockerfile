@@ -1,24 +1,20 @@
-# Utiliza la imagen base de Python 3.9 slim
+# Usa la imagen base de Python 3.9 slim, que es ligera y contiene solo lo necesario para ejecutar Python
 FROM python:3.9-slim
 
-# Establece el directorio de trabajo en el contenedor
+# Establece el directorio de trabajo en el contenedor. Todo el código será copiado y ejecutado desde aquí
 WORKDIR /app
 
-# Copia el archivo de dependencias en el contenedor
+# Copia el archivo de dependencias en el contenedor para instalar las bibliotecas necesarias
 COPY requirements.txt requirements.txt
 
-# Crea y activa un entorno virtual
-RUN python -m venv venv
-ENV PATH="/app/venv/bin:$PATH"
+# Instala las dependencias listadas en requirements.txt directamente en el sistema del contenedor
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Instala las dependencias del proyecto en el entorno virtual
-RUN /app/venv/bin/pip install --no-cache-dir -r requirements.txt
-
-# Copia el resto del código fuente del proyecto en el contenedor
+# Copia el código fuente del proyecto dentro del contenedor
 COPY . .
 
-# Especifica el puerto en el que la aplicación estará disponible
+# Expone el puerto 5000, que es donde Flask servirá la aplicación
 EXPOSE 5000
 
-
+# Define el comando por defecto para iniciar la aplicación Flask
 CMD ["python", "run.py"]
