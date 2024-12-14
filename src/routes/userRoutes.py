@@ -20,8 +20,16 @@ def crear_usuario():
     success, result = create_user(request.form)  # Usar el servicio para crear un nuevo usuario
 
     if success:
-        subject = "Bienvenido al sistema"
-        body = f"Su contraseña temporal es: {result}"
+        subject = "Bienvenido al sistema del laboratorio IQRN"
+        body = (
+            "¡Bienvenido al sistema del laboratorio del IQRN!\n\n"
+            "Nos complace darle acceso a nuestra plataforma. A continuación, encontrará su contraseña temporal, "
+            "la cual deberá utilizar para iniciar sesión por primera vez. Por favor, recuerde cambiarla una vez que haya ingresado al sistema.\n\n"
+            f"Su contraseña temporal es: {result}\n\n"
+            "Si tiene alguna pregunta o necesita ayuda, no dude en ponerse en contacto con nuestro equipo de soporte.\n\n"
+            "Atentamente,\n"
+            "El equipo del laboratorio IQRN"
+        )
         send_email(subject, request.form['email'], body)  # Enviar el correo al nuevo usuario
         flash('Usuario creado exitosamente y contraseña enviada por correo.', 'success')
     else:
