@@ -44,8 +44,27 @@ docker-compose up --build
 
 ### Migraciones de base de datos
 ```bash
+docker-compose exec web flask db migrate -m "Initial migration"
+```
+
+```bash
 docker-compose exec web flask db upgrade
 ```
+### Automatización de roles y usuario administrador
+
+El sistema está configurado para crear automáticamente los roles necesarios (`administrador` y `operador`) y un usuario administrador al iniciar el contenedor. Esto se realiza mediante los scripts `create_roles.py` y `create_admin.py`, que se ejecutan automáticamente al iniciar el contenedor `web`.
+
+#### Variables de entorno necesarias
+Para crear el usuario administrador, asegúrate de definir las siguientes variables en el archivo `.env`:
+
+- `ADMIN_FIRST_NAME`: Nombre del administrador.
+- `ADMIN_LAST_NAME`: Apellido del administrador.
+- `ADMIN_RUT`: RUT del administrador.
+- `ADMIN_EMAIL`: Correo electrónico del administrador.
+- `ADMIN_PHONE`: Teléfono del administrador.
+- `ADMIN_PASSWORD`: Contraseña del administrador.
+
+Si necesitas modificar los roles o el usuario administrador, edita los scripts `create_roles.py` y `create_admin.py`.
 
 ### Funcionalidades
 
