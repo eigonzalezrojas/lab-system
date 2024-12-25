@@ -1,4 +1,4 @@
-from src.models import UserAccount, UserRole
+from src.models import UserAccount, UserRole, UserType
 from src import db
 import random
 import string
@@ -49,16 +49,28 @@ def update_user(data):
     original_rut = data.get('original_rut')
     user = UserAccount.query.filter_by(rut=original_rut).first()
 
-    if user:
+    if not user:
+        return False
+
+    try:
         user.rut = data.get('rut')
         user.first_name = data.get('first_name')
         user.last_name = data.get('last_name')
         user.phone = data.get('phone')
         user.email = data.get('email')
         user.role_id = data.get('role_id')
+
+        if 'type' in data:
+            if isinstance(data['type'], UserType):
+                user.type = data['type']
+            else:
+                user.type = UserType(data['type'])
+
         db.session.commit()
         return True
-    return False
+    except Exception as e:
+        db.session.rollback()
+        return False
 
 
 def delete_user(rut):

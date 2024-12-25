@@ -9,6 +9,7 @@ from src.services.email_service import send_email
 from src.models import Request, Project, Machine, Solvent, Sample, Nucleo, SamplePreparation
 from src.services.project_service import get_project_by_id
 from src.services.machine_service import get_machine_by_id
+from src.models import UserType
 
 solicitudes_bp = Blueprint('solicitudes', __name__)
 
@@ -18,7 +19,33 @@ solicitudes_bp = Blueprint('solicitudes', __name__)
 def solicitudes():
     projects = get_all_projects()
     machines = get_all_machines()
-    return render_template('operador_dashboard.html', section='solicitudes', projects=projects, machines=machines)
+
+    # Obtener las solicitudes del usuario actual
+    solicitudes = Request.query.filter_by(user_rut=current_user.rut).all()
+
+    # Depuración para verificar los datos
+    print(f"DEBUG: current_user.type = {current_user.type}")
+    print(f"DEBUG: solicitudes = {solicitudes}")
+
+    if current_user.type == UserType.INTERNAL:
+        return render_template(
+            'operador_dashboard_interno.html',
+            section='solicitudes',
+            projects=projects,
+            machines=machines,
+            solicitudes=solicitudes  # Pasar solicitudes al template
+        )
+    elif current_user.type == UserType.EXTERNAL:
+        return render_template(
+            'operador_dashboard_externo.html',
+            section='solicitudes',
+            projects=projects,
+            machines=machines,
+            solicitudes=solicitudes  # Pasar solicitudes al template
+        )
+    else:
+        flash('Tipo de usuario no válido.', 'danger')
+        return redirect(url_for('auth.logout'))
 
 
 @solicitudes_bp.route('/solicitudes_admin')
@@ -45,16 +72,34 @@ def nueva_solicitud():
         flash('Proyecto o Máquina no encontrados.', 'danger')
         return redirect(url_for('solicitudes.solicitudes'))
 
-    return render_template(
-        'operador_dashboard.html',
-        section='nueva_solicitud',
-        project=project,
-        machine=machine,
-        solvents=solvents,
-        sample_preparations=sample_preparations,
-        samples=samples,
-        nucleos=nucleos
-    )
+    # Depuración para verificar el tipo de usuario
+    print(f"DEBUG: current_user.type = {current_user.type}")
+
+    if current_user.type == UserType.INTERNAL:  # Comparar con el Enum
+        return render_template(
+            'operador_dashboard_interno.html',
+            section='nueva_solicitud',
+            project=project,
+            machine=machine,
+            solvents=solvents,
+            sample_preparations=sample_preparations,
+            samples=samples,
+            nucleos=nucleos
+        )
+    elif current_user.type == UserType.EXTERNAL:  # Comparar con el Enum
+        return render_template(
+            'operador_dashboard_externo.html',
+            section='nueva_solicitud',
+            project=project,
+            machine=machine,
+            solvents=solvents,
+            sample_preparations=sample_preparations,
+            samples=samples,
+            nucleos=nucleos
+        )
+    else:
+        flash('Tipo de usuario no válido.', 'danger')
+        return redirect(url_for('auth.logout'))
 
 
 @solicitudes_bp.route('/agregar_solicitud', methods=['POST'])

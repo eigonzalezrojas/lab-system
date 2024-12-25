@@ -3,33 +3,28 @@ from src import db
 
 
 def get_all_samples():
-    """Obtiene todas las muestras de la base de datos."""
     return Sample.query.all()
 
 
-def create_sample(name, price):
-    """Crea una nueva muestra en la base de datos."""
-    new_sample = Sample(name=name, price=price)
-    db.session.add(new_sample)
+def create_sample(name, precio_interno, precio_externo):
+    sample = Sample(name=name, precio_interno=precio_interno, precio_externo=precio_externo)
+    db.session.add(sample)
     db.session.commit()
 
 
-def update_sample(sample_id, name, price):
-    """Actualiza los detalles de una muestra existente."""
+def update_sample(sample_id, name, precio_interno, precio_externo):
     sample = Sample.query.get(sample_id)
     if sample:
         sample.name = name
-        try:
-            sample.price = float(price)
-            db.session.commit()
-            return True
-        except ValueError:
-            return False, "El precio debe ser un número."
-    return False, "Muestra no encontrada."
+        sample.precio_interno = precio_interno
+        sample.precio_externo = precio_externo
+        db.session.commit()
+        return True, "Muestra actualizada correctamente"
+    else:
+        return False, "Muestra no encontrada"
 
 
-def delete_sample(sample_id):
-    """Elimina una muestra de la base de datos por su ID."""
+def delete_sample(sample_id):    
     sample = Sample.query.get(sample_id)
     if sample:
         db.session.delete(sample)

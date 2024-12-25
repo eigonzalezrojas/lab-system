@@ -8,7 +8,7 @@ sample_bp = Blueprint('sample', __name__)
 @sample_bp.route('/muestras', methods=['GET'])
 @login_required
 def muestras():
-    samples = get_all_samples()  # Usar el servicio para obtener todas las muestras
+    samples = get_all_samples()
     return render_template('admin_dashboard.html', section='samples', samples=samples)
 
 
@@ -16,15 +16,17 @@ def muestras():
 @login_required
 def crear_muestra():
     name = request.form.get('name')
-    price = request.form.get('price')
+    precio_interno = request.form.get('precio_interno')
+    precio_externo = request.form.get('precio_externo')
 
     try:
-        price = float(price)
+        precio_interno = float(precio_interno)
+        precio_externo = float(precio_externo)
     except ValueError:
-        flash('El precio debe ser un número.', 'danger')
+        flash('Los precios deben ser números.', 'danger')
         return redirect(url_for('sample.muestras'))
 
-    create_sample(name, price)  # Usar el servicio para crear una nueva muestra
+    create_sample(name, precio_interno, precio_externo)
     flash('Muestra creada con éxito', 'success')
     return redirect(url_for('sample.muestras'))
 
@@ -34,9 +36,10 @@ def crear_muestra():
 def editar_muestra():
     sample_id = request.form.get('id')
     name = request.form.get('name')
-    price = request.form.get('price')
+    precio_interno = request.form.get('precio_interno')
+    precio_externo = request.form.get('precio_externo')
 
-    success, message = update_sample(sample_id, name, price)  # Usar el servicio para actualizar la muestra
+    success, message = update_sample(sample_id, name, precio_interno, precio_externo)
     if success:
         flash('Muestra actualizada con éxito', 'success')
     else:
@@ -48,7 +51,7 @@ def editar_muestra():
 @sample_bp.route('/eliminar_muestra/<int:id>', methods=['DELETE'])
 @login_required
 def eliminar_muestra(id):
-    if delete_sample(id):  # Usar el servicio para eliminar la muestra
+    if delete_sample(id):
         return {'success': True}
     else:
         return {'success': False}

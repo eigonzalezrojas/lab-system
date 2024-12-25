@@ -8,7 +8,7 @@ nucleo_bp = Blueprint('nucleo', __name__)
 @nucleo_bp.route('/nucleos')
 @login_required
 def nucleos():
-    nucleos = get_all_nucleos()  # Usar el servicio para obtener todos los núcleos
+    nucleos = get_all_nucleos()
     return render_template('admin_dashboard.html', section='nucleos', nucleos=nucleos)
 
 
@@ -16,11 +16,18 @@ def nucleos():
 @login_required
 def crear_nucleo():
     nombre = request.form.get('nombre')
-    precio = request.form.get('precio')
+    precio_interno = request.form.get('precio_interno')
+    precio_externo = request.form.get('precio_externo')
 
-    create_nucleo(nombre, precio)  # Usar el servicio para crear un nuevo núcleo
+    try:
+        precio_interno = float(precio_interno)
+        precio_externo = float(precio_externo)
+    except ValueError:
+        flash('Los precios deben ser números.', 'danger')
+        return redirect(url_for('nucleo.nucleos'))
 
-    flash('Núcleo creado con éxito.', 'success')
+    create_nucleo(nombre, precio_interno, precio_externo)
+    flash('Núcleo creado con éxito', 'success')
     return redirect(url_for('nucleo.nucleos'))
 
 
@@ -29,12 +36,14 @@ def crear_nucleo():
 def editar_nucleo():
     nucleo_id = request.form.get('id')
     nombre = request.form.get('nombre')
-    precio = request.form.get('precio')
+    precio_interno = request.form.get('precio_interno')
+    precio_externo = request.form.get('precio_externo')
 
-    if update_nucleo(nucleo_id, nombre, precio):  # Usar el servicio para actualizar el núcleo
-        flash('Núcleo actualizado con éxito.', 'success')
+    success, message = update_nucleo(nucleo_id, nombre, precio_interno, precio_externo)
+    if success:
+        flash('Núcleo actualizado con éxito', 'success')
     else:
-        flash('Núcleo no encontrado.', 'danger')
+        flash(message, 'danger')
 
     return redirect(url_for('nucleo.nucleos'))
 
@@ -42,7 +51,7 @@ def editar_nucleo():
 @nucleo_bp.route('/eliminar_nucleo/<int:nucleo_id>', methods=['DELETE'])
 @login_required
 def eliminar_nucleo(nucleo_id):
-    if delete_nucleo(nucleo_id):  # Usar el servicio para eliminar el núcleo
+    if delete_nucleo(nucleo_id):
         return jsonify(success=True)
     else:
         return jsonify(success=False), 404

@@ -3,30 +3,28 @@ from src import db
 
 
 def get_all_nucleos():
-    """Obtiene todos los núcleos de la base de datos."""
     return Nucleo.query.all()
 
 
-def create_nucleo(nombre, precio):
-    """Crea un nuevo núcleo en la base de datos."""
-    nuevo_nucleo = Nucleo(nombre=nombre, precio=precio)
-    db.session.add(nuevo_nucleo)
+def create_nucleo(nombre, precio_interno, precio_externo):
+    nucleo = Nucleo(nombre=nombre, precio_interno=precio_interno, precio_externo=precio_externo)
+    db.session.add(nucleo)
     db.session.commit()
 
 
-def update_nucleo(nucleo_id, nombre, precio):
-    """Actualiza los detalles de un núcleo existente."""
+def update_nucleo(nucleo_id, nombre, precio_interno, precio_externo):
     nucleo = Nucleo.query.get(nucleo_id)
     if nucleo:
         nucleo.nombre = nombre
-        nucleo.precio = precio
+        nucleo.precio_interno = precio_interno
+        nucleo.precio_externo = precio_externo
         db.session.commit()
-        return True
-    return False
+        return True, "Núcleo actualizado correctamente"
+    else:
+        return False, "Núcleo no encontrado"
 
 
 def delete_nucleo(nucleo_id):
-    """Elimina un núcleo de la base de datos por su ID."""
     nucleo = Nucleo.query.get(nucleo_id)
     if nucleo:
         db.session.delete(nucleo)

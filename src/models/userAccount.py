@@ -1,6 +1,11 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from src import db
 from flask_login import UserMixin
+from enum import Enum
+
+class UserType(Enum):
+    INTERNAL = "interno"
+    EXTERNAL = "externo"
 
 class UserAccount(UserMixin, db.Model):
     __tablename__ = 'user_accounts'
@@ -12,6 +17,7 @@ class UserAccount(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     role_id = db.Column(db.Integer, db.ForeignKey('user_roles.id'), nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
+    type = db.Column(db.Enum(UserType), nullable=False, default=UserType.INTERNAL)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

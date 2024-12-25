@@ -1,3 +1,13 @@
+window.closeModalOnSubmit = function() {
+    document.getElementById('modal').classList.add('hidden');
+    return true;
+}
+
+window.closeEditModalOnSubmit = function() {
+    document.getElementById('editModal').classList.add('hidden');
+    return true;
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     function getCsrfToken() {
         return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -21,21 +31,19 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function closeModalOnSubmit() {
-        document.getElementById('modal').classList.add('hidden');
-        return true;
-    }
 
     let userToEdit = null;
     userEditButtons.forEach(button => {
         button.addEventListener('click', function () {
+            const row = this.closest('tr');
             userToEdit = {
-                rut: this.closest('tr').children[0].textContent.trim(),
-                first_name: this.closest('tr').children[1].textContent.trim(),
-                last_name: this.closest('tr').children[2].textContent.trim(),
-                phone: this.closest('tr').children[3].textContent.trim(),
-                email: this.closest('tr').children[4].textContent.trim(),
-                role_id: this.closest('tr').children[5].getAttribute('data-role-id')
+                rut: row.children[0].textContent.trim(),
+                first_name: row.children[1].textContent.trim(),
+                last_name: row.children[2].textContent.trim(),
+                phone: row.children[3].textContent.trim(),
+                email: row.children[4].textContent.trim(),
+                role_id: row.querySelector('td:nth-child(6)').getAttribute('data-role-id'), // Asegúrate de agregar este atributo en tu HTML
+                type: row.children[6].textContent.trim()
             };
 
             document.getElementById('edit_original_rut').value = userToEdit.rut;
@@ -45,6 +53,14 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('edit_phone').value = userToEdit.phone;
             document.getElementById('edit_email').value = userToEdit.email;
             document.getElementById('edit_role_id').value = userToEdit.role_id;
+
+            // Convertir el tipo de usuario mostrado a los valores del enum
+            const typeSelect = document.getElementById('edit_type');
+            if (userToEdit.type.toLowerCase().includes('interno')) {
+                typeSelect.value = 'INTERNAL';
+            } else if (userToEdit.type.toLowerCase().includes('externo')) {
+                typeSelect.value = 'EXTERNAL';
+            }
 
             document.getElementById('editModal').classList.remove('hidden');
         });
@@ -56,10 +72,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function closeEditModalOnSubmit() {
-        document.getElementById('editModal').classList.add('hidden');
-        return true;
-    }
 
     let rutToDelete = null;
     userDeleteButtons.forEach(button => {
@@ -399,11 +411,13 @@ document.addEventListener('DOMContentLoaded', function () {
         button.addEventListener('click', function () {
             const id = this.getAttribute('data-id');
             const name = this.getAttribute('data-name');
-            const price = this.getAttribute('data-price'); // Obtener el precio
+            const precio_interno = this.getAttribute('data-precio_interno');
+            const precio_externo = this.getAttribute('data-precio_externo');
 
             document.getElementById('edit_sample_id').value = id;
             document.getElementById('edit_sample_name').value = name;
-            document.getElementById('edit_sample_price').value = price; // Establecer el precio
+            document.getElementById('edit_sample_precio_interno').value = precio_interno;
+            document.getElementById('edit_sample_precio_externo').value = precio_externo;
 
             document.getElementById('editSampleModal').classList.remove('hidden');
         });
@@ -471,11 +485,13 @@ document.addEventListener('DOMContentLoaded', function () {
         button.addEventListener('click', function () {
             const id = this.getAttribute('data-id');
             const nombre = this.getAttribute('data-nombre');
-            const precio = this.getAttribute('data-precio');
+            const precio_interno = this.getAttribute('data-precio_interno');
+            const precio_externo = this.getAttribute('data-precio_externo');
 
             document.getElementById('edit_nucleo_id').value = id;
             document.getElementById('edit_nucleo_nombre').value = nombre;
-            document.getElementById('edit_nucleo_precio').value = precio;
+            document.getElementById('edit_nucleo_precio_interno').value = precio_interno;
+            document.getElementById('edit_nucleo_precio_externo').value = precio_externo;
 
             document.getElementById('editNucleoModal').classList.remove('hidden');
         });

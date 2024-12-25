@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from src.services.auth_services import authenticate_user, generate_temporary_password, update_password
 from src.services.email_service import send_email
-from src.models import UserAccount
+from src.models import UserAccount, UserType
 import time
 
 auth_bp = Blueprint('auth', __name__)
@@ -18,7 +18,13 @@ def login():
             if user.is_admin():
                 return redirect(url_for('home.home'))
             else:
-                return redirect(url_for('main.operador_dashboard'))
+                if user.type == UserType.INTERNAL:
+                    return redirect(url_for('main.operador_interno_dashboard'))
+                elif user.type == UserType.EXTERNAL:
+                    return redirect(url_for('main.operador_externo_dashboard'))
+                else:
+                    flash('Rut y/o contraseña inválida', 'danger')
+                return render_template('login.html')
         else:
             flash('Rut y/o contraseña inválida', 'danger')
     return render_template('login.html')
@@ -33,7 +39,7 @@ def forgot_password():
             if generate_temporary_password(user):
                 subject = "Contraseña Temporal"
                 body = f"Su contraseña temporal es: {user.temporary_password}"
-                if send_email(subject, user.email, body):  # Usar el servicio de correo
+                if send_email(subject, user.email, body):
                     flash('Una contraseña fue enviada a su correo registrado', 'success')
                 else:
                     flash('Hubo un error en el envío del correo', 'danger')
@@ -44,6 +50,7 @@ def forgot_password():
         time.sleep(1)
         return redirect(url_for('auth.login'))
     return render_template('forgot_password.html')
+
 
 
 @auth_bp.route('/change_password', methods=['GET', 'POST'])

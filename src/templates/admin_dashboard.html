@@ -173,6 +173,7 @@
                             <th class="py-2 px-4 bg-gray-200">Teléfono</th>
                             <th class="py-2 px-4 bg-gray-200">Correo</th>
                             <th class="py-2 px-4 bg-gray-200">Rol</th>
+                            <th class="py-2 px-4 bg-gray-200">Tipo</th>
                             <th class="py-2 px-4 bg-gray-200">Opciones</th>
                         </tr>
                     </thead>
@@ -184,7 +185,8 @@
                                 <td class="border px-4 py-2">{{ usuario.last_name }}</td>
                                 <td class="border px-4 py-2">{{ usuario.phone }}</td>
                                 <td class="border px-4 py-2">{{ usuario.email }}</td>
-                                <td class="border px-4 py-2">{{ usuario.role.name }}</td>
+                                <td class="border px-4 py-2" data-role-id="{{ usuario.role_id }}">{{ usuario.role.name }}</td>
+                                <td class="border px-4 py-2">{{ usuario.type.value }}</td>
                                 <td class="border px-4 py-2">
                                     <div class="flex space-x-2">
                                         <a href="#" class="btn btn-edit">
@@ -343,19 +345,21 @@
                 <table class="min-w-full bg-white">
                     <thead>
                         <tr>
-                            <th class="py-2 px-4 bg-gray-200">Nombre</th>
-                            <th class="py-2 px-4 bg-gray-200">Precio (UF)</th>
+                            <th class="py-2 px-4 bg-gray-200">Nombre</th>                            
+                            <th class="py-2 px-4 bg-gray-200">Precio Interno (UF)</th>
+                            <th class="py-2 px-4 bg-gray-200">Precio Externo (UF)</th>
                             <th class="py-2 px-4 bg-gray-200">Opciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for sample in samples %}
                             <tr>
-                                <td class="border px-4 py-2">{{ sample.name }}</td>
-                                <td class="border px-4 py-2">{{ sample.price }} UF</td>
+                                <td class="border px-4 py-2">{{ sample.name }}</td>                                
+                                <td class="border px-4 py-2">{{ sample.precio_interno }} UF</td>
+                                <td class="border px-4 py-2">{{ sample.precio_externo }} UF</td>
                                 <td class="border px-4 py-2">
                                     <div class="flex space-x-2 justify-center">
-                                        <a href="#" class="btn btn-edit-sample" data-id="{{ sample.id }}" data-name="{{ sample.name }}" data-price="{{ sample.price }}">
+                                        <a href="#" class="btn btn-edit-sample" data-id="{{ sample.id }}" data-name="{{ sample.name }}" data-precio_interno="{{ sample.precio_interno }}" data-precio_externo="{{ sample.precio_externo }}">
                                             <div class="bg-blue-500 p-2 rounded">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
                                                     <path d="M17.414 2.586a2 2 0 00-2.828 0L13 4.172 15.828 7l1.586-1.586a2 2 0 000-2.828zM12 5l3 3-9 9H3v-3l9-9z"/>
@@ -374,52 +378,54 @@
                             </tr>
                         {% else %}
                             <tr>
-                                <td class="border px-4 py-2 text-center" colspan="3">No hay muestras registradas.</td>
+                                <td class="border px-4 py-2 text-center" colspan="5">No hay muestras registradas.</td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             {% elif section == 'nucleos' %}
                 <div class="flex justify-between items-center mb-6">
-                    <h1 class="text-2xl">Nucleos</h1>
+                    <h1 class="text-2xl">Núcleos</h1>
                     <button id="openNucleoModal" class="bg-green-500 text-white py-2 px-4 rounded-lg">Crear</button>
                 </div>
                 <table class="min-w-full bg-white">
                     <thead>
                         <tr>
-                            <th class="py-2 px-4 bg-gray-200">Nombre</th>
-                            <th class="py-2 px-4 bg-gray-200">Precio</th>
+                            <th class="py-2 px-4 bg-gray-200">Nombre</th>                            
+                            <th class="py-2 px-4 bg-gray-200">Precio Interno (UF)</th>
+                            <th class="py-2 px-4 bg-gray-200">Precio Externo (UF)</th>
                             <th class="py-2 px-4 bg-gray-200">Opciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for nucleo in nucleos %}
-                        <tr>
-                            <td class="border px-4 py-2">{{ nucleo.nombre }}</td>
-                            <td class="border px-4 py-2">{{ nucleo.precio }} UF</td>
-                            <td class="border px-4 py-2">
-                                <div class="flex space-x-2">
-                                    <a href="#" class="btn btn-edit-nucleo" data-id="{{ nucleo.id }}" data-nombre="{{ nucleo.nombre }}" data-precio="{{ nucleo.precio }}">
-                                        <div class="bg-blue-500 p-2 rounded">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
-                                                <path d="M17.414 2.586a2 2 0 00-2.828 0L13 4.172 15.828 7l1.586-1.586a2 2 0 000-2.828zM12 5l3 3-9 9H3v-3l9-9z" />
-                                            </svg>
-                                        </div>
-                                    </a>
-                                    <a href="#" class="btn btn-delete-nucleo" data-id="{{ nucleo.id }}">
-                                        <div class="bg-red-500 p-2 rounded">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd" d="M8 4a1 1 0 011-1h2a1 1 0 011 1v1h5a1 1 0 110 2h-1v9a2 2 0 01-2 2H6a2 2 0 01-2-2V7H3a1 1 0 110-2h5V4zm1 3a1 1 0 00-1 1v7a1 1 0 102 0V8a1 1 0 00-1-1zm4 1a1 1 0 10-2 0v7a1 1 0 102 0V8z" clip-rule="evenodd" />
-                                            </svg>
-                                        </div>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
+                            <tr>
+                                <td class="border px-4 py-2">{{ nucleo.nombre }}</td>
+                                <td class="border px-4 py-2">{{ nucleo.precio_interno }} UF</td>
+                                <td class="border px-4 py-2">{{ nucleo.precio_externo }} UF</td>
+                                <td class="border px-4 py-2">
+                                    <div class="flex space-x-2 justify-center">
+                                        <a href="#" class="btn btn-edit-nucleo" data-id="{{ nucleo.id }}" data-nombre="{{ nucleo.nombre }}" data-precio="{{ nucleo.precio }}" data-precio_interno="{{ nucleo.precio_interno }}" data-precio_externo="{{ nucleo.precio_externo }}">
+                                            <div class="bg-blue-500 p-2 rounded">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path d="M17.414 2.586a2 2 0 00-2.828 0L13 4.172 15.828 7l1.586-1.586a2 2 0 000-2.828zM12 5l3 3-9 9H3v-3l9-9z"/>
+                                                </svg>
+                                            </div>
+                                        </a>
+                                        <a href="#" class="btn btn-delete-nucleo" data-id="{{ nucleo.id }}">
+                                            <div class="bg-red-500 p-2 rounded">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M8 4a1 1 0 011-1h2a1 1 0 011 1v1h5a1 1 0 110 2h-1v9a2 2 0 01-2 2H6a2 2 0 01-2-2V7H3a1 1 0 110-2h5V4zm1 3a1 1 0 00-1 1v7a1 1 0 102 0V8a1 1 0 00-1-1zm4 1a1 1 0 10-2 0v7a1 1 0 102 0V8z" clip-rule="evenodd"/>
+                                                </svg>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
                         {% else %}
-                        <tr>
-                            <td class="border px-4 py-2 text-center" colspan="3">No hay núcleos registrados.</td>
-                        </tr>
+                            <tr>
+                                <td class="border px-4 py-2 text-center" colspan="5">No hay núcleos registrados.</td>
+                            </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -534,11 +540,16 @@
                     </div>
                     <div class="bg-indigo-500 text-white p-6 rounded-lg shadow-lg">
                         <h2 class="text-2xl">Núcleos</h2>
-                        <p class="text-4xl">{{ total_nucleos }}</p> <!-- Mostrar el total de nucleos -->
+                        <p class="text-4xl">{{ total_nucleos }}</p>
                     </div>
                     <div class="bg-orange-500 text-white p-6 rounded-lg shadow-lg">
                         <h2 class="text-2xl">Solicitudes</h2>
-                        <p class="text-4xl">{{ total_solicitudes }}</p> <!-- Mostrar el total de solicitudes -->
+                        <p class="text-4xl">{{ total_solicitudes }}</p>
+                    </div>
+                    <div class="bg-pink-500 text-white p-6 rounded-lg shadow-lg">
+                        <h2 class="text-2xl">Valor UF</h2>
+                        <p class="text-4xl">$ {{ valor_uf }}</p>
+                        <p class="text-sm mt-2">Actualizado al día de hoy</p>
                     </div>
                 </div>
             {% else %}
@@ -560,7 +571,7 @@
     <div id="modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
         <div class="bg-white p-6 rounded-lg shadow-lg w-1/2">
             <h2 class="text-2xl mb-4">Crear Usuario</h2>
-            <form method="POST" action="{{ url_for('user.crear_usuario') }}" onsubmit="return closeModalOnSubmit()">
+            <form method="POST" action="{{ url_for('user.crear_usuario') }}" onsubmit="return window.closeModalOnSubmit()">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="mb-4">
                     <label for="rut" class="block text-gray-700">RUT</label>
@@ -583,11 +594,17 @@
                     <input type="email" name="email" id="email" class="w-full px-3 py-2 border rounded-lg" required>
                 </div>
                 <div class="mb-4">
-                    <label for="role_id" class="block text-gray-700">Rol</label>
-                    <select name="role_id" id="role_id" class="w-full px-3 py-2 border rounded-lg" required>
-                        {% for role in roles %}
-                            <option value="{{ role.id }}">{{ role.name }}</option>
-                        {% endfor %}
+                    <label for="type" class="block text-gray-700">Tipo</label>
+                    <select name="type" id="type" class="w-full px-3 py-2 border rounded-lg" required>
+                        <option value="INTERNAL">Interno</option>
+                        <option value="EXTERNAL">Externo</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="type" class="block text-gray-700">Tipo</label>
+                    <select name="type" id="type" class="w-full px-3 py-2 border rounded-lg" required>
+                        <option value="interno">Interno</option>
+                        <option value="externo">Externo</option>
                     </select>
                 </div>
                 <div class="flex justify-end">
@@ -614,7 +631,7 @@
     <div id="editModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
         <div class="bg-white p-6 rounded-lg shadow-lg w-1/2">
             <h2 class="text-2xl mb-4">Editar Usuario</h2>
-            <form id="editUserForm" method="POST" action="{{ url_for('user.editar_usuario') }}" onsubmit="return closeEditModalOnSubmit()">
+            <form id="editUserForm" method="POST" action="{{ url_for('user.editar_usuario') }}" onsubmit="return window.closeEditModalOnSubmit()">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="original_rut" id="edit_original_rut">
                 <div class="mb-4">
@@ -643,6 +660,13 @@
                         {% for role in roles %}
                             <option value="{{ role.id }}">{{ role.name }}</option>
                         {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="edit_type" class="block text-gray-700">Tipo</label>
+                    <select name="type" id="edit_type" class="w-full px-3 py-2 border rounded-lg" required>
+                        <option value="INTERNAL">Interno</option>
+                        <option value="EXTERNAL">Externo</option>
                     </select>
                 </div>
                 <div class="flex justify-end">
@@ -868,8 +892,12 @@
                     <input type="text" name="name" id="sample_name" class="w-full px-3 py-2 border rounded-lg" required>
                 </div>
                 <div class="mb-4">
-                    <label for="sample_price" class="block text-gray-700">Precio (UF)</label>
-                    <input type="number" name="price" id="sample_price" class="w-full px-3 py-2 border rounded-lg" step="0.01" min="0" required> <!-- Campo de precio -->
+                    <label for="sample_precio_interno" class="block text-gray-700">Precio Interno (UF)</label>
+                    <input type="number" name="precio_interno" id="sample_precio_interno" class="w-full px-3 py-2 border rounded-lg" step="0.01" min="0" required>
+                </div>
+                <div class="mb-4">
+                    <label for="sample_precio_externo" class="block text-gray-700">Precio Externo (UF)</label>
+                    <input type="number" name="precio_externo" id="sample_precio_externo" class="w-full px-3 py-2 border rounded-lg" step="0.01" min="0" required>
                 </div>
                 <div class="flex justify-end">
                     <button type="button" id="closeSampleModal" class="bg-gray-500 text-white py-2 px-4 rounded-lg mr-2">Cancelar</button>
@@ -891,8 +919,12 @@
                     <input type="text" name="name" id="edit_sample_name" class="w-full px-3 py-2 border rounded-lg" required>
                 </div>
                 <div class="mb-4">
-                    <label for="edit_sample_price" class="block text-gray-700">Precio (UF)</label>
-                    <input type="number" name="price" id="edit_sample_price" class="w-full px-3 py-2 border rounded-lg" step="0.01" min="0" required> <!-- Campo de precio -->
+                    <label for="edit_sample_precio_interno" class="block text-gray-700">Precio Interno (UF)</label>
+                    <input type="number" name="precio_interno" id="edit_sample_precio_interno" class="w-full px-3 py-2 border rounded-lg" step="0.01" min="0" required>
+                </div>
+                <div class="mb-4">
+                    <label for="edit_sample_precio_externo" class="block text-gray-700">Precio Externo (UF)</label>
+                    <input type="number" name="precio_externo" id="edit_sample_precio_externo" class="w-full px-3 py-2 border rounded-lg" step="0.01" min="0" required>
                 </div>
                 <div class="flex justify-end">
                     <button type="button" id="closeEditSampleModal" class="bg-gray-500 text-white py-2 px-4 rounded-lg mr-2">Cancelar</button>
@@ -925,9 +957,16 @@
                     <input type="text" name="nombre" id="nucleo_nombre" class="w-full px-3 py-2 border rounded-lg" required>
                 </div>
                 <div class="mb-4">
-                    <label for="nucleo_precio" class="block text-gray-700">Precio (UF)</label>
+                    <label for="nucleo_precio_interno" class="block text-gray-700">Precio Interno (UF)</label>
                     <div class="flex items-center">
-                        <input type="number" step="0.01" name="precio" id="nucleo_precio" class="w-full px-3 py-2 border rounded-lg" required>
+                        <input type="number" step="0.01" name="precio_interno" id="nucleo_precio_interno" class="w-full px-3 py-2 border rounded-lg" required>
+                        <span class="ml-2">UF</span>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label for="nucleo_precio_externo" class="block text-gray-700">Precio Externo (UF)</label>
+                    <div class="flex items-center">
+                        <input type="number" step="0.01" name="precio_externo" id="nucleo_precio_externo" class="w-full px-3 py-2 border rounded-lg" required>
                         <span class="ml-2">UF</span>
                     </div>
                 </div>
@@ -952,9 +991,16 @@
                     <input type="text" name="nombre" id="edit_nucleo_nombre" class="w-full px-3 py-2 border rounded-lg" required>
                 </div>
                 <div class="mb-4">
-                    <label for="edit_nucleo_precio" class="block text-gray-700">Precio (UF)</label>
+                    <label for="edit_nucleo_precio_interno" class="block text-gray-700">Precio Interno (UF)</label>
                     <div class="flex items-center">
-                        <input type="number" step="0.01" name="precio" id="edit_nucleo_precio" class="w-full px-3 py-2 border rounded-lg" required>
+                        <input type="number" step="0.01" name="precio_interno" id="edit_nucleo_precio_interno" class="w-full px-3 py-2 border rounded-lg" required>
+                        <span class="ml-2">UF</span>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label for="edit_nucleo_precio_externo" class="block text-gray-700">Precio Externo (UF)</label>
+                    <div class="flex items-center">
+                        <input type="number" step="0.01" name="precio_externo" id="edit_nucleo_precio_externo" class="w-full px-3 py-2 border rounded-lg" required>
                         <span class="ml-2">UF</span>
                     </div>
                 </div>

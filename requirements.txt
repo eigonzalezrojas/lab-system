@@ -1,5 +1,7 @@
 alembic==1.13.2
 blinker==1.8.2
+certifi==2024.12.14
+charset-normalizer==3.4.1
 click==8.1.7
 Flask==2.3.2
 Flask-Login==0.6.2
@@ -7,7 +9,9 @@ Flask-Migrate==3.1.0
 Flask-SQLAlchemy==2.5.1
 Flask-WTF==1.2.1
 fpdf==1.7.2
+greenlet==3.1.1
 gunicorn==23.0.0
+idna==3.10
 importlib_metadata==8.0.0
 itsdangerous==2.2.0
 Jinja2==3.1.4
@@ -17,8 +21,10 @@ packaging==24.1
 PyMySQL==1.0.2
 python-dotenv==0.19.2
 pytz==2024.1
+requests==2.32.3
 SQLAlchemy==1.4.36
 typing_extensions==4.12.2
+urllib3==2.3.0
 Werkzeug==2.3.7
 WTForms==3.1.2
 zipp==3.19.2

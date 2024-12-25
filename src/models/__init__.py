@@ -1,5 +1,6 @@
 from src.models.userRole import UserRole
 from src.models.userAccount import UserAccount
+from src.models.userAccount import UserType
 from src.models.project import Project
 from src.models.machine import Machine
 from src.models.solvent import Solvent

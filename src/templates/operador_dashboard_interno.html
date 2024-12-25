@@ -25,7 +25,7 @@
             <!-- Menú de Navegación -->
             <nav class="flex flex-col space-y-2 mt-4">
                 <!-- Opción de Inicio -->
-                <a href="{{ url_for('main.operador_dashboard') }}"
+                <a href="{{ url_for('main.operador_interno_dashboard') }}"
                    class="flex items-center py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white">
                     <!-- Icono -->
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2">
@@ -161,7 +161,7 @@
                             <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
                                 {% for sample in samples %}
                                     <div class="flex flex-col items-center">
-                                        <label class="form-label">{{ sample.name }} ({{ sample.price }} UF)</label>
+                                        <label class="form-label">{{ sample.name }} ({{ sample.precio_interno }} UF)</label>
                                         <input type="checkbox" name="sample_ids" value="{{ sample.id }}" class="mt-1">
                                     </div>
                                 {% endfor %}
@@ -174,7 +174,7 @@
                             <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
                                 {% for nucleo in nucleos %}
                                     <div class="flex flex-col items-center">
-                                        <label class="form-label">{{ nucleo.nombre }} ({{ nucleo.precio }} UF)</label>
+                                        <label class="form-label">{{ nucleo.nombre }} ({{ nucleo.precio_interno }} UF)</label>
                                         <input type="checkbox" name="nucleo_ids" value="{{ nucleo.id }}" class="mt-1">
                                     </div>
                                 {% endfor %}
@@ -209,14 +209,19 @@
                     </form>
                 </div>
             {% elif section == 'home' %}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <div class="bg-blue-500 text-white p-6 rounded-lg shadow-lg w-full">
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-blue-500 text-white p-6 rounded-lg shadow-lg">
                         <h2 class="text-2xl">Solicitudes</h2>
                         <p class="text-4xl">{{ total_solicitudes }}</p>
                     </div>
-                    <div class="bg-green-500 text-white p-6 rounded-lg shadow-lg w-full">
+                    <div class="bg-green-500 text-white p-6 rounded-lg shadow-lg">
                         <h2 class="text-2xl">Proyectos</h2>
                         <p class="text-4xl">{{ total_proyectos }}</p>
+                    </div>
+                    <div class="bg-pink-500 text-white p-6 rounded-lg shadow-lg">
+                        <h2 class="text-2xl">Valor UF</h2>
+                        <p class="text-4xl">$ {{ valor_uf }}</p>
+                        <p class="text-sm mt-2">Actualizado al día de hoy</p>
                     </div>
                 </div>
                 <!-- Tabla de solicitudes -->
