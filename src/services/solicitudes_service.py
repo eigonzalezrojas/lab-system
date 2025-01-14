@@ -227,7 +227,9 @@ def generate_solicitud_pdf(solicitud, solicitudes):
     for nucleo in selected_nucleos:
         pdf.cell(dynamic_column_width, 6, txt=nucleo.nombre, border=1, align='C')
 
-    pdf.cell(20, 6, txt="Total (CLP)", border=1, align='C', ln=True)
+    pdf.cell(20, 6, txt="Monto (CLP)", border=1, align='C', ln=True)
+
+    total_monto_clp = 0  # Variable para almacenar el total
 
     for solicitud_item in solicitudes:
         pdf.set_x(start_x)
@@ -246,7 +248,15 @@ def generate_solicitud_pdf(solicitud, solicitudes):
 
         # Convertir el costo total a CLP
         total_cost_clp = solicitud_item.total_cost * valor_uf
+        total_monto_clp += total_cost_clp  # Sumar al total
         pdf.cell(20, 6, txt=f"${total_cost_clp:,.0f}", border=1, align='C', ln=True)
+
+    # Agregar el total al final de la tabla
+    pdf.ln(6)
+    pdf.set_x(start_x)
+    pdf.set_font("Arial", style="B", size=8)
+    pdf.cell(40 + dynamic_column_width * num_dynamic_columns, 6, txt="TOTAL", border=1, align='L')
+    pdf.cell(20, 6, txt=f"${total_monto_clp:,.0f}", border=1, align='C', ln=True)
 
     return pdf
 
