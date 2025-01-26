@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 last_name: row.children[2].textContent.trim(),
                 phone: row.children[3].textContent.trim(),
                 email: row.children[4].textContent.trim(),
-                role_id: row.querySelector('td:nth-child(6)').getAttribute('data-role-id'), // Asegúrate de agregar este atributo en tu HTML
+                role_id: row.querySelector('td:nth-child(6)').getAttribute('data-role-id'),
                 type: row.children[6].textContent.trim()
             };
 
@@ -569,7 +569,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 if (data.success) {
                     alert('Estado actualizado con éxito');
-                    location.reload(); // Recargar para mostrar el nuevo estado
+                    location.reload();
                 } else {
                     alert('Error al actualizar el estado.');
                 }
@@ -577,7 +577,6 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => console.error('Error:', error));
     }
 
-    // Función para inicializar la eliminación de solicitudes
     // Función para inicializar la eliminación de solicitudes
     function initializeDeleteRequest() {
         const requestDeleteButtons = document.querySelectorAll('.delete-request-button');
