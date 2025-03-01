@@ -84,12 +84,23 @@ def create_solicitud(data, current_user):
     machine = Machine.query.get(machine_id)
 
     # Calcular el costo total
+    # Calcular el costo total
     total_cost = 0
+
     if current_user.type == UserType.INTERNAL:
-        total_cost += sum(sample.precio_interno for sample in samples)
+        for sample in samples:
+            if sample.name == "C13" and c13_miligramos and c13_miligramos < 20:
+                total_cost += sample.precio_interno * 3
+            else:
+                total_cost += sample.precio_interno
         total_cost += sum(nucleo.precio_interno for nucleo in nucleos)
+
     elif current_user.type == UserType.EXTERNAL:
-        total_cost += sum(sample.precio_externo for sample in samples)
+        for sample in samples:
+            if sample.name == "C13" and c13_miligramos and c13_miligramos < 20:
+                total_cost += sample.precio_externo * 3
+            else:
+                total_cost += sample.precio_externo
         total_cost += sum(nucleo.precio_externo for nucleo in nucleos)
 
     # Crear la solicitud con el valor de `c13_miligramos`
@@ -206,12 +217,12 @@ def generate_solicitud_pdf(solicitud, solicitudes):
         unique_sample_ids.update(solicitud_item.sample_ids.split(','))
         unique_nucleo_ids.update(solicitud_item.nucleo_ids.split(','))
 
+    # Obtener todas las muestras y núcleos asociados a las solicitudes
     selected_samples = Sample.query.filter(Sample.id.in_([int(i) for i in unique_sample_ids if i.isdigit()])).all()
 
-    # Agregar manualmente C13 si está en la solicitud
-    for solicitud_item in solicitudes:
-        if "C13" in solicitud_item.sample_ids:
-            selected_samples.append(Sample(id="C13", name="C13", miligramos=solicitud_item.c13_miligramos))
+    # Verificar si C13 está en la solicitud y agregarlo solo si no está ya en selected_samples
+    if "C13" in unique_sample_ids and not any(sample.name == "C13" for sample in selected_samples):
+        selected_samples.append(Sample(id="C13", name="C13", miligramos=solicitud.c13_miligramos))
 
     selected_nucleos = Nucleo.query.filter(Nucleo.id.in_(unique_nucleo_ids)).all()
 
