@@ -37,8 +37,22 @@ def forgot_password():
         user = UserAccount.query.filter_by(rut=rut).first()
         if user:
             if generate_temporary_password(user):
-                subject = "Contraseña Temporal"
-                body = f"Su contraseña temporal es: {user.temporary_password}"
+                subject = "Contraseña Temporal IQRN"
+                body = f"""
+                Estimado/a {user.first_name},
+
+                Hemos recibido una solicitud para restablecer su contraseña. Para acceder a su cuenta, utilice la siguiente contraseña temporal:
+
+                🔑 Contraseña temporal: **{user.temporary_password}**
+
+                Por favor, inicie sesión y cambie su contraseña lo antes posible para garantizar la seguridad de su cuenta.
+
+                Si usted no solicitó este cambio, por favor ignore este mensaje.
+
+                Atentamente,  
+                El equipo de soporte de IQRN
+                """
+
                 if send_email(subject, user.email, body):
                     flash('Una contraseña fue enviada a su correo registrado', 'success')
                 else:

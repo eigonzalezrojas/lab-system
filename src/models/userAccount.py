@@ -17,6 +17,7 @@ class UserAccount(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     role_id = db.Column(db.Integer, db.ForeignKey('user_roles.id'), nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
+    temporary_password = db.Column(db.String(255), nullable=True)
     type = db.Column(db.Enum(UserType), nullable=False, default=UserType.INTERNAL)
 
     def set_password(self, password):

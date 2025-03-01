@@ -45,12 +45,9 @@ def authenticate_user(rut, password):
 
 def generate_temporary_password(user):
     temporary_password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
-    user.set_password(temporary_password)
+    user.temporary_password = temporary_password
     db.session.commit()
-    subject = "Contraseña temporal"
-    body = f"Su contraseña temporal es: {temporary_password}"
-    email_sent = send_email(subject, user.email, body)
-    return email_sent
+    return True
 
 
 def update_password(current_password, new_password, confirm_password):
