@@ -49,4 +49,44 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+
+    const c13Checkbox = document.getElementById("c13-checkbox");
+    const modal = document.getElementById("modal-c13");
+    const gramsInput = document.getElementById("c13-grams");
+    const hiddenC13Grams = document.getElementById("hidden-c13-grams");
+    const confirmBtn = document.getElementById("confirm-btn");
+    const cancelBtn = document.getElementById("cancel-btn");
+
+    if (c13Checkbox) {
+        c13Checkbox.addEventListener("change", () => {
+            if (c13Checkbox.checked) {
+                modal.classList.remove("hidden");
+            }
+        });
+    } else {
+        console.log("No se encontró el checkbox con ID 'c13-checkbox'");
+    }
+
+    // Botón Aceptar
+    confirmBtn.addEventListener("click", () => {
+        if (!hiddenC13Grams) {
+            console.error("No se puede asignar el valor porque 'hidden-c13-grams' no existe.");
+            return;
+        }
+
+        const gramsValue = parseFloat(gramsInput.value);
+        if (!isNaN(gramsValue) && gramsValue > 0) {
+            hiddenC13Grams.value = gramsValue;
+            modal.classList.add("hidden");
+        } else {
+            alert("Ingrese un valor válido para los gramos.");
+        }
+    });
+
+    // Botón Cancelar
+    cancelBtn.addEventListener("click", () => {
+        modal.classList.add("hidden");
+        if (c13Checkbox) c13Checkbox.checked = false;
+    });
+
 });

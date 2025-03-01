@@ -33,7 +33,7 @@ def solicitudes():
             section='solicitudes',
             projects=projects,
             machines=machines,
-            solicitudes=solicitudes  # Pasar solicitudes al template
+            solicitudes=solicitudes
         )
     elif current_user.type == UserType.EXTERNAL:
         return render_template(
@@ -41,7 +41,7 @@ def solicitudes():
             section='solicitudes',
             projects=projects,
             machines=machines,
-            solicitudes=solicitudes  # Pasar solicitudes al template
+            solicitudes=solicitudes
         )
     else:
         flash('Tipo de usuario no válido.', 'danger')
@@ -75,7 +75,7 @@ def nueva_solicitud():
     # Depuración para verificar el tipo de usuario
     print(f"DEBUG: current_user.type = {current_user.type}")
 
-    if current_user.type == UserType.INTERNAL:  # Comparar con el Enum
+    if current_user.type == UserType.INTERNAL:
         return render_template(
             'operador_dashboard_interno.html',
             section='nueva_solicitud',
@@ -86,7 +86,7 @@ def nueva_solicitud():
             samples=samples,
             nucleos=nucleos
         )
-    elif current_user.type == UserType.EXTERNAL:  # Comparar con el Enum
+    elif current_user.type == UserType.EXTERNAL:
         return render_template(
             'operador_dashboard_externo.html',
             section='nueva_solicitud',
@@ -105,24 +105,48 @@ def nueva_solicitud():
 @solicitudes_bp.route('/agregar_solicitud', methods=['POST'])
 @login_required
 def agregar_solicitud():
-    nueva_solicitud = create_solicitud(request.form, current_user)
+    try:
+        # Obtener datos del formulario
+        form_data = request.form
+        sample_name = form_data.get('sample_name')
+        c13_grams = float(form_data.get('c13_grams', 0)) if 'c13_grams' in form_data else 0
 
-    admin_emails = get_admin_emails()
+        # Lógica especial para la muestra C13
+        if sample_name and sample_name.upper() == "C13":
+            sample = Sample.query.filter_by(name="C13").first()
+            if sample:
+                # Si los gramos son menores a 20, se multiplica el precio por 3
+                if c13_grams < 20:
+                    sample.precio_interno *= 3
+                    sample.precio_externo *= 3
+                sample.miligramos = int(c13_grams * 1000)  # Convertimos gramos a miligramos
+                db.session.commit()  # Guardamos los cambios en la muestra
 
-    subject = "Nueva Solicitud Creada"
-    body = f"""
-        Una nueva solicitud ha sido creada en el sistema.
+        # Crear la solicitud
+        nueva_solicitud = create_solicitud(form_data, current_user)
 
-        Detalles de la Solicitud:
-        - Nombre del Usuario: {nueva_solicitud.user_name}
-        - Proyecto: {nueva_solicitud.project_name}
-        - Muestra: {nueva_solicitud.request_name}
-        - Fecha: {nueva_solicitud.fecha}
-    """
+        # Enviar correo a los administradores
+        admin_emails = get_admin_emails()
+        subject = "Nueva Solicitud Creada"
+        body = f"""
+            Una nueva solicitud ha sido creada en el sistema.
 
-    send_solicitud_email(send_email, subject, body, admin_emails)
-    flash('Solicitud agregada con éxito', 'success')
-    return redirect(url_for('solicitudes.solicitudes'))
+            Detalles de la Solicitud:
+            - Nombre del Usuario: {nueva_solicitud.user_name}
+            - Proyecto: {nueva_solicitud.project_name}
+            - Muestra: {nueva_solicitud.request_name}
+            - Fecha: {nueva_solicitud.fecha}
+        """
+        send_solicitud_email(send_email, subject, body, admin_emails)
+
+        flash('Solicitud agregada con éxito', 'success')
+        return redirect(url_for('solicitudes.solicitudes'))
+
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Ocurrió un error: {str(e)}', 'danger')
+        return redirect(url_for('solicitudes.solicitudes'))
+
 
 
 @solicitudes_bp.route('/descargar/<int:solicitud_id>', methods=['GET'])

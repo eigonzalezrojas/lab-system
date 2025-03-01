@@ -20,6 +20,8 @@ class Request(db.Model):
     sample_ids = db.Column(db.String(256), nullable=False)
     nucleo_ids = db.Column(db.String(256), nullable=False)
     total_cost = db.Column(db.Float, nullable=False)
+    c13_miligramos = db.Column(db.Integer, nullable=True)
 
     def __repr__(self):
         return f'<Request {self.project_name} - Estado: {self.estado}>'
+

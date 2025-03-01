@@ -74,10 +74,16 @@ def create_solicitud(data, current_user):
     nucleo_ids = data.getlist('nucleo_ids')
     machine_id = data.get('machine_id')
 
+    # Obtener la cantidad de gramos ingresados de C13
+    c13_grams = data.get('c13_grams')
+    c13_miligramos = int(float(c13_grams)) if c13_grams else None
+
+    # Obtener muestras y núcleos
     samples = Sample.query.filter(Sample.id.in_(sample_ids)).all()
     nucleos = Nucleo.query.filter(Nucleo.id.in_(nucleo_ids)).all()
     machine = Machine.query.get(machine_id)
 
+    # Calcular el costo total
     total_cost = 0
     if current_user.type == UserType.INTERNAL:
         total_cost += sum(sample.precio_interno for sample in samples)
@@ -86,8 +92,8 @@ def create_solicitud(data, current_user):
         total_cost += sum(sample.precio_externo for sample in samples)
         total_cost += sum(nucleo.precio_externo for nucleo in nucleos)
 
+    # Crear la solicitud con el valor de `c13_miligramos`
     request_name = sample_name
-
     nueva_solicitud = Request(
         user_name=f"{current_user.first_name} {current_user.last_name}",
         user_rut=current_user.rut,
@@ -101,7 +107,8 @@ def create_solicitud(data, current_user):
         nucleo_ids=','.join(map(str, nucleo_ids)),
         total_cost=total_cost,
         estado='Pendiente',
-        fecha=current_time
+        fecha=current_time,
+        c13_miligramos=c13_miligramos  # ✅ Guardamos los mg en la solicitud
     )
 
     db.session.add(nueva_solicitud)
@@ -199,7 +206,13 @@ def generate_solicitud_pdf(solicitud, solicitudes):
         unique_sample_ids.update(solicitud_item.sample_ids.split(','))
         unique_nucleo_ids.update(solicitud_item.nucleo_ids.split(','))
 
-    selected_samples = Sample.query.filter(Sample.id.in_(unique_sample_ids)).all()
+    selected_samples = Sample.query.filter(Sample.id.in_([int(i) for i in unique_sample_ids if i.isdigit()])).all()
+
+    # Agregar manualmente C13 si está en la solicitud
+    for solicitud_item in solicitudes:
+        if "C13" in solicitud_item.sample_ids:
+            selected_samples.append(Sample(id="C13", name="C13", miligramos=solicitud_item.c13_miligramos))
+
     selected_nucleos = Nucleo.query.filter(Nucleo.id.in_(unique_nucleo_ids)).all()
 
     total_width = 190
@@ -229,14 +242,18 @@ def generate_solicitud_pdf(solicitud, solicitudes):
 
     pdf.cell(20, 6, txt="Monto (CLP)", border=1, align='C', ln=True)
 
-    total_monto_clp = 0  # Variable para almacenar el total
+    total_monto_clp = 0
 
     for solicitud_item in solicitudes:
         pdf.set_x(start_x)
         pdf.cell(40, 6, txt=f"{solicitud_item.request_name}", border=1, align='C')
+
         for sample in selected_samples:
             if str(sample.id) in solicitud_item.sample_ids.split(','):
-                pdf.cell(dynamic_column_width, 6, txt="X", border=1, align='C')
+                if sample.name == "C13" and solicitud_item.c13_miligramos:
+                    pdf.cell(dynamic_column_width, 6, txt=f"{solicitud_item.c13_miligramos} mg", border=1, align='C')
+                else:
+                    pdf.cell(dynamic_column_width, 6, txt="X", border=1, align='C')
             else:
                 pdf.cell(dynamic_column_width, 6, txt="", border=1, align='C')
 
@@ -248,7 +265,7 @@ def generate_solicitud_pdf(solicitud, solicitudes):
 
         # Convertir el costo total a CLP
         total_cost_clp = solicitud_item.total_cost * valor_uf
-        total_monto_clp += total_cost_clp  # Sumar al total
+        total_monto_clp += total_cost_clp
         pdf.cell(20, 6, txt=f"${total_cost_clp:,.0f}", border=1, align='C', ln=True)
 
     # Agregar el total al final de la tabla
