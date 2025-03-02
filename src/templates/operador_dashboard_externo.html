@@ -156,13 +156,17 @@
                         </div>
 
                         <!-- Selección de Muestras -->
+                        <input type="hidden" name="c13_grams" id="hidden-c13-grams">
                         <div class="mb-4">
                             <label class="form-label mb-2">Experimentos</label>
                             <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
                                 {% for sample in samples %}
                                     <div class="flex flex-col items-center">
-                                        <label class="form-label">{{ sample.name }} ({{ sample.precio_externo }} UF)</label>
-                                        <input type="checkbox" name="sample_ids" value="{{ sample.id }}" class="mt-1">
+                                        <label class="form-label">{{ sample.name }} ({{ sample.precio_interno }} UF)</label>
+                                        <input type="checkbox" name="sample_ids"
+                                               value="{{ 'C13' if sample.name.strip() == 'C13' else sample.id }}"
+                                               class="mt-1"
+                                               {% if sample.name.strip() == 'C13' %}id="c13-checkbox"{% endif %}>
                                     </div>
                                 {% endfor %}
                             </div>
@@ -207,6 +211,18 @@
                         <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg">Change Password</button>
                         <button type="button" onclick="history.back()" class="w-full bg-gray-500 text-white py-2 rounded-lg mt-2 block text-center">Back</button>
                     </form>
+
+                    <!-- Modal para gramos (C13) -->
+                    <div id="modal-c13" class="hidden fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+                        <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
+                            <h2 class="text-xl font-semibold mb-4">Ingrese los miligramos de Carbono 13</h2>
+                            <input type="number" id="c13-grams" class="w-full border rounded-lg p-2 mb-4" placeholder="Ingrese los miligramos">
+                            <div class="flex justify-end">
+                                <button type="button" id="cancel-btn" class="bg-gray-400 text-white px-4 py-2 rounded-lg mr-2">Cancelar</button>
+                                <button type="button" id="confirm-btn" class="bg-blue-500 text-white px-4 py-2 rounded-lg">Aceptar</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             {% elif section == 'home' %}
                 <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mb-6">
@@ -262,5 +278,6 @@
             {% endif %}
         </div>
     </div>
+    <script src="{{ url_for('static', filename='js/operador_dashboard.js') }}"></script>
 </body>
 </html>

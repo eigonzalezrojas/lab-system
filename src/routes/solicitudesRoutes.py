@@ -119,8 +119,8 @@ def agregar_solicitud():
                 if c13_grams < 20:
                     sample.precio_interno *= 3
                     sample.precio_externo *= 3
-                sample.miligramos = int(c13_grams * 1000)  # Convertimos gramos a miligramos
-                db.session.commit()  # Guardamos los cambios en la muestra
+                sample.miligramos = int(c13_grams)
+                db.session.commit()
 
         # Crear la solicitud
         nueva_solicitud = create_solicitud(form_data, current_user)

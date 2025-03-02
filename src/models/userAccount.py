@@ -2,7 +2,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from src import db
 from flask_login import UserMixin
 from enum import Enum
-
 class UserType(Enum):
     INTERNAL = "interno"
     EXTERNAL = "externo"
@@ -10,6 +9,7 @@ class UserType(Enum):
 class UserAccount(UserMixin, db.Model):
     __tablename__ = 'user_accounts'
     __table_args__ = {'extend_existing': True}
+
     rut = db.Column(db.String(12), primary_key=True)
     first_name = db.Column(db.String(64), nullable=False)
     last_name = db.Column(db.String(64), nullable=False)
@@ -24,7 +24,16 @@ class UserAccount(UserMixin, db.Model):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+        """ Verifica la contraseña ingresada con la almacenada en `password_hash` o `temporary_password`. """
+        # Verificamos la contraseña normal
+        if check_password_hash(self.password_hash, password):
+            return True
+
+        # Verificamos la contraseña temporal
+        if self.temporary_password and check_password_hash(self.temporary_password, password):
+            return True
+
+        return False
 
     def is_admin(self):
         return self.role.name == 'administrador'
