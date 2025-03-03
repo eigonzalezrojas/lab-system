@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
+    console.log("JavaScript cargado correctamente."); // Depuración
+
+    // Elementos generales
     const changePasswordLink = document.getElementById('changePasswordLink');
     const changePasswordModal = document.getElementById('changePasswordModal');
     const closeChangePasswordModalButton = document.getElementById('closeChangePasswordModal');
@@ -49,13 +52,20 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-
+    // 🔹 Validamos si existen elementos de C13 antes de ejecutarlo
     const c13Checkbox = document.getElementById("c13-checkbox");
     const modal = document.getElementById("modal-c13");
     const gramsInput = document.getElementById("c13-grams");
     const hiddenC13Grams = document.getElementById("hidden-c13-grams");
     const confirmBtn = document.getElementById("confirm-btn");
     const cancelBtn = document.getElementById("cancel-btn");
+
+    if (!c13Checkbox || !modal || !gramsInput || !hiddenC13Grams || !confirmBtn || !cancelBtn) {
+        console.warn("La funcionalidad de C13 no se ejecutará porque uno o más elementos no existen en esta vista.");
+        return;
+    }
+
+    console.log("Elementos de C13 encontrados, inicializando eventos...");
 
     if (c13Checkbox) {
         c13Checkbox.addEventListener("change", () => {
