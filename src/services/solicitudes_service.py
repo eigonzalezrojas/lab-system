@@ -34,11 +34,9 @@ def obtener_valor_uf():
     try:
         # Realizar la solicitud a la API
         response = requests.get('https://mindicador.cl/api/uf', timeout=10)
-        print(f"Estado de la respuesta: {response.status_code}")
 
         if response.status_code == 200:
             data = response.json()
-            print(f"Datos obtenidos de la API: {data}")
 
             # Extraer el valor más reciente de la UF
             if "serie" in data and len(data["serie"]) > 0:

@@ -52,7 +52,7 @@ def solicitudes():
 @solicitudes_bp.route('/solicitudes_admin')
 @login_required
 def solicitudes_admin():
-    solicitudes = Request.query.all()
+    solicitudes = Request.query.order_by(Request.fecha.desc()).all()
     return render_template('admin_dashboard.html', section='solicitudes_admin', solicitudes=solicitudes)
 
 
