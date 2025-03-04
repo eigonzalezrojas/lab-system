@@ -241,31 +241,40 @@
                 </div>
                 <!-- Tabla de solicitudes -->
                 <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white border border-gray-300 text-xs">
+                    <table class="w-full border-collapse">
                         <thead>
                             <tr>
-                                <th class="py-2 px-4 bg-gray-200 text-left font-semibold text-gray-600 uppercase tracking-wider">Nombre de la muestra</th>
-                                <th class="py-2 px-4 bg-gray-200 text-left font-semibold text-gray-600 uppercase tracking-wider">Nombre del usuario</th>
-                                <th class="py-2 px-4 bg-gray-200 text-left font-semibold text-gray-600 uppercase tracking-wider">Nombre del proyecto</th>
-                                <th class="py-2 px-4 bg-gray-200 text-left font-semibold text-gray-600 uppercase tracking-wider">Máquina</th>
-                                <th class="py-2 px-4 bg-gray-200 text-left font-semibold text-gray-600 uppercase tracking-wider">Fecha</th>
-                                <th class="py-2 px-4 bg-gray-200 text-left font-semibold text-gray-600 uppercase tracking-wider">Estado</th>
-                                <th class="py-2 px-4 bg-gray-200 text-left font-semibold text-gray-600 uppercase tracking-wider">Total</th>
-                                <th class="py-2 px-4 bg-gray-200 text-left font-semibold text-gray-600 uppercase tracking-wider">Documento</th>
+                                <th class="py-3 px-6 bg-gray-200 text-left font-semibold text-gray-700 uppercase tracking-wider text-lg">
+                                    Nombre de la muestra
+                                </th>
+                                <th class="py-3 px-6 bg-gray-200 text-left font-semibold text-gray-700 uppercase tracking-wider text-lg">
+                                    Nombre del proyecto
+                                </th>
+                                <th class="py-3 px-6 bg-gray-200 text-left font-semibold text-gray-700 uppercase tracking-wider text-lg">
+                                    Máquina
+                                </th>
+                                <th class="py-3 px-6 bg-gray-200 text-left font-semibold text-gray-700 uppercase tracking-wider text-lg">
+                                    Fecha
+                                </th>
+                                <th class="py-3 px-6 bg-gray-200 text-left font-semibold text-gray-700 uppercase tracking-wider text-lg">
+                                    Estado
+                                </th>
+                                <th class="py-3 px-6 bg-gray-200 text-left font-semibold text-gray-700 uppercase tracking-wider text-lg">
+                                    Documento
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for solicitud_data in solicitudes %}
-                            <tr>
-                                <td class="py-2 px-4 border-b">{{ solicitud_data.request_name }}</td>
-                                <td class="py-2 px-4 border-b">{{ solicitud_data.user_name }}</td>
-                                <td class="py-2 px-4 border-b">{{ solicitud_data.project_name }}</td>
-                                <td class="py-2 px-4 border-b">{{ solicitud_data.machine_name }}</td>
-                                <td class="py-2 px-4 border-b">{{ solicitud_data.fecha.strftime('%Y-%m-%d') }}</td>
-                                <td class="py-2 px-4 border-b">{{ solicitud_data.estado }}</td>
-                                <td class="py-2 px-4 border-b">{{ solicitud_data.total_cost }} UF</td>
-                                <td class="py-2 px-4 border-b">
-                                    <a href="{{ url_for('solicitudes.descargar', solicitud_id=solicitud_data.id) }}" class="text-blue-500 hover:underline">Descargar</a>
+                            <tr class="border-b hover:bg-gray-100">
+                                <td class="py-3 px-6 text-lg">{{ solicitud_data.request_name }}</td>
+                                <td class="py-3 px-6 text-lg">{{ solicitud_data.project_name }}</td>
+                                <td class="py-3 px-6 text-lg">{{ solicitud_data.machine_name }}</td>
+                                <td class="py-3 px-6 text-lg">{{ solicitud_data.fecha.strftime('%Y-%m-%d') }}</td>
+                                <td class="py-3 px-6 text-lg">{{ solicitud_data.estado }}</td>
+                                <td class="py-3 px-6 text-lg">
+                                    <a href="{{ url_for('solicitudes.descargar', solicitud_id=solicitud_data.id) }}"
+                                       class="text-blue-500 hover:underline">Descargar</a>
                                 </td>
                             </tr>
                             {% endfor %}

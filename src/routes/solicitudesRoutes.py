@@ -10,6 +10,7 @@ from src.models import Request, Project, Machine, Solvent, Sample, Nucleo, Sampl
 from src.services.project_service import get_project_by_id
 from src.services.machine_service import get_machine_by_id
 from src.models import UserType
+from src import db
 
 solicitudes_bp = Blueprint('solicitudes', __name__)
 
@@ -109,20 +110,23 @@ def agregar_solicitud():
         # Obtener datos del formulario
         form_data = request.form
         sample_name = form_data.get('sample_name')
-        c13_grams = float(form_data.get('c13_grams', 0)) if 'c13_grams' in form_data else 0
 
-        # Lógica especial para la muestra C13
-        if sample_name and sample_name.upper() == "C13":
+        # Obtener y validar el campo c13_grams
+        c13_grams = form_data.get('c13_grams', '').strip()
+        c13_grams = float(c13_grams) if c13_grams and c13_grams.replace('.', '', 1).isdigit() else None  # Si es inválido, lo deja como None
+
+        # Lógica especial para la muestra C13 solo si fue seleccionada
+        if sample_name and sample_name.upper() == "C13" and c13_grams is not None:
             sample = Sample.query.filter_by(name="C13").first()
             if sample:
                 # Si los gramos son menores a 20, se multiplica el precio por 3
-                if c13_grams < 20:
+                if c13_grams < 15:
                     sample.precio_interno *= 3
                     sample.precio_externo *= 3
                 sample.miligramos = int(c13_grams)
                 db.session.commit()
 
-        # Crear la solicitud
+        # Crear la solicitud excluyendo c13_grams si no aplica
         nueva_solicitud = create_solicitud(form_data, current_user)
 
         # Enviar correo a los administradores
@@ -148,7 +152,6 @@ def agregar_solicitud():
         return redirect(url_for('solicitudes.solicitudes'))
 
 
-
 @solicitudes_bp.route('/descargar/<int:solicitud_id>', methods=['GET'])
 @login_required
 def descargar(solicitud_id):
@@ -162,7 +165,7 @@ def descargar(solicitud_id):
     pdf = generate_solicitud_pdf(solicitud, solicitudes)
 
     # Preparar la respuesta con el PDF generado
-    response = make_response(pdf.output(dest='S').encode('latin1'))
+    response = make_response(bytes(pdf.output(dest='S')))
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = f'attachment; filename=solicitud_{solicitud.id}.pdf'
     return response

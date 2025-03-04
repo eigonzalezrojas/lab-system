@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-    console.log("JavaScript cargado correctamente."); // Depuración
 
     // Elementos generales
     const changePasswordLink = document.getElementById('changePasswordLink');
@@ -65,7 +64,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    console.log("Elementos de C13 encontrados, inicializando eventos...");
 
     if (c13Checkbox) {
         c13Checkbox.addEventListener("change", () => {
@@ -73,8 +71,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 modal.classList.remove("hidden");
             }
         });
-    } else {
-        console.log("No se encontró el checkbox con ID 'c13-checkbox'");
     }
 
     // Botón Aceptar

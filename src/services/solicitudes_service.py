@@ -60,7 +60,7 @@ def obtener_valor_uf():
     except Exception as e:
         print(f"Excepción inesperada: {e}")
         return None
-    
+
 
 def create_solicitud(data, current_user):
     timezone = pytz.timezone('America/Santiago')
@@ -69,42 +69,28 @@ def create_solicitud(data, current_user):
     sample_name = data.get('sample_name')
     solvent_id = data.get('solvent_id')
     sample_preparation_id = data.get('sample_preparation_id')
-    recovery = data.get('recovery')
+    recovery = data.get('recovery', 'no')
     sample_ids = data.getlist('sample_ids')
     nucleo_ids = data.getlist('nucleo_ids')
     machine_id = data.get('machine_id')
 
-    # Obtener la cantidad de gramos ingresados de C13
-    c13_grams = data.get('c13_grams')
-    c13_miligramos = int(float(c13_grams)) if c13_grams else None
+    c13_grams = data.get('c13_grams', '').strip()
+    c13_miligramos = int(float(c13_grams)) if c13_grams.replace('.', '', 1).isdigit() else None
 
-    # Obtener muestras y núcleos
     samples = Sample.query.filter(Sample.id.in_(sample_ids)).all()
     nucleos = Nucleo.query.filter(Nucleo.id.in_(nucleo_ids)).all()
     machine = Machine.query.get(machine_id)
 
-    # Calcular el costo total
-    # Calcular el costo total
-    total_cost = 0
+    total_cost = sum(
+        sample.precio_interno if current_user.type == UserType.INTERNAL else sample.precio_externo for sample in
+        samples)
+    total_cost += sum(
+        nucleo.precio_interno if current_user.type == UserType.INTERNAL else nucleo.precio_externo for nucleo in
+        nucleos)
 
-    if current_user.type == UserType.INTERNAL:
-        for sample in samples:
-            if sample.name == "C13" and c13_miligramos and c13_miligramos < 20:
-                total_cost += sample.precio_interno * 3
-            else:
-                total_cost += sample.precio_interno
-        total_cost += sum(nucleo.precio_interno for nucleo in nucleos)
+    if any(sample.name == "C13" and c13_miligramos and c13_miligramos < 20 for sample in samples):
+        total_cost *= 3
 
-    elif current_user.type == UserType.EXTERNAL:
-        for sample in samples:
-            if sample.name == "C13" and c13_miligramos and c13_miligramos < 20:
-                total_cost += sample.precio_externo * 3
-            else:
-                total_cost += sample.precio_externo
-        total_cost += sum(nucleo.precio_externo for nucleo in nucleos)
-
-    # Crear la solicitud con el valor de `c13_miligramos`
-    request_name = sample_name
     nueva_solicitud = Request(
         user_name=f"{current_user.first_name} {current_user.last_name}",
         user_rut=current_user.rut,
@@ -113,19 +99,19 @@ def create_solicitud(data, current_user):
         solvent_name=Solvent.query.get(solvent_id).name,
         sample_preparation_name=SamplePreparation.query.get(sample_preparation_id).name,
         recovery=recovery,
-        request_name=request_name,
+        request_name=sample_name,
         sample_ids=','.join(map(str, sample_ids)),
         nucleo_ids=','.join(map(str, nucleo_ids)),
         total_cost=total_cost,
         estado='Pendiente',
         fecha=current_time,
-        c13_miligramos=c13_miligramos  # ✅ Guardamos los mg en la solicitud
+        c13_miligramos=c13_miligramos
     )
 
     db.session.add(nueva_solicitud)
     db.session.commit()
-
     return nueva_solicitud
+
 
 
 def get_admin_emails():
@@ -157,6 +143,8 @@ def generate_solicitud_pdf(solicitud, solicitudes):
     pdf = FPDF()
     pdf.add_page()
 
+    pdf.set_font("Arial", size=12)
+
     valor_uf = obtener_valor_uf()
     if not valor_uf:
         raise Exception("No se pudo obtener el valor de la UF.")
@@ -164,7 +152,6 @@ def generate_solicitud_pdf(solicitud, solicitudes):
     # Encabezado del PDF
     logo_path = 'src/static/img/utal.png'
     pdf.image(logo_path, x=10, y=8, w=30)
-    pdf.set_font("Arial", size=12)
     pdf.cell(0, 10, 'Instituto de Química de Recursos Naturales', ln=True, align='C')
 
     pdf.ln(10)
@@ -287,6 +274,8 @@ def generate_solicitud_pdf(solicitud, solicitudes):
     pdf.cell(20, 6, txt=f"${total_monto_clp:,.0f}", border=1, align='C', ln=True)
 
     return pdf
+
+
 
 def get_all_solicitudes_with_details(user_rut):
     solicitudes = Request.query.filter_by(user_rut=user_rut).all()
