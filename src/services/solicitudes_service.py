@@ -75,16 +75,21 @@ def create_solicitud(data, current_user):
     c13_grams = data.get('c13_grams', '').strip()
     c13_miligramos = int(float(c13_grams)) if c13_grams.replace('.', '', 1).isdigit() else None
 
-    samples = Sample.query.filter(Sample.id.in_(sample_ids)).all()
+    # Obtener muestras por ID numérico
+    samples = Sample.query.filter(Sample.id.in_([int(i) for i in sample_ids if i.isdigit()])).all()
+    # Si C13 está seleccionada pero no está en la lista (por ID string), agregarla manualmente
+    if any(i == 'C13' for i in sample_ids) and not any(s.name == 'C13' for s in samples):
+        c13_sample = Sample.query.filter_by(name='C13').first()
+        if c13_sample:
+            samples.append(c13_sample)
+
     nucleos = Nucleo.query.filter(Nucleo.id.in_(nucleo_ids)).all()
     machine = Machine.query.get(machine_id)
 
     total_cost = sum(
-        sample.precio_interno if current_user.type == UserType.INTERNAL else sample.precio_externo for sample in
-        samples)
+        sample.precio_interno if current_user.type == UserType.INTERNAL else sample.precio_externo for sample in samples)
     total_cost += sum(
-        nucleo.precio_interno if current_user.type == UserType.INTERNAL else nucleo.precio_externo for nucleo in
-        nucleos)
+        nucleo.precio_interno if current_user.type == UserType.INTERNAL else nucleo.precio_externo for nucleo in nucleos)
 
     if any(sample.name == "C13" and c13_miligramos and c13_miligramos < 20 for sample in samples):
         total_cost *= 3

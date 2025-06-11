@@ -109,24 +109,7 @@ def agregar_solicitud():
     try:
         # Obtener datos del formulario
         form_data = request.form
-        sample_name = form_data.get('sample_name')
-
-        # Obtener y validar el campo c13_grams
-        c13_grams = form_data.get('c13_grams', '').strip()
-        c13_grams = float(c13_grams) if c13_grams and c13_grams.replace('.', '', 1).isdigit() else None  # Si es inválido, lo deja como None
-
-        # Lógica especial para la muestra C13 solo si fue seleccionada
-        if sample_name and sample_name.upper() == "C13" and c13_grams is not None:
-            sample = Sample.query.filter_by(name="C13").first()
-            if sample:
-                # Si los gramos son menores a 20, se multiplica el precio por 3
-                if c13_grams < 15:
-                    sample.precio_interno *= 3
-                    sample.precio_externo *= 3
-                sample.miligramos = int(c13_grams)
-                db.session.commit()
-
-        # Crear la solicitud excluyendo c13_grams si no aplica
+        # Crear la solicitud directamente
         nueva_solicitud = create_solicitud(form_data, current_user)
 
         # Enviar correo a los administradores
