@@ -8,6 +8,20 @@ services:
     environment:
       FLASK_ENV: production
       FLASK_APP: src
+      DATABASE_URL: mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db/${MYSQL_DATABASE}
+      SECRET_KEY: your-secret-key-here
+    command: >
+      sh -c "
+        echo 'Waiting for database...' &&
+        while ! nc -z db 3306; do
+          sleep 1
+        done &&
+        echo 'Database is ready' &&
+        flask db upgrade &&
+        python create_roles.py &&
+        python create_admin.py &&
+        python run.py
+      "
     depends_on:
       - db
 

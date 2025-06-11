@@ -13,5 +13,3 @@ COPY . .
 RUN mkdir -p /app/migrations/versions
 
 EXPOSE 5000
-
-CMD ["sh", "entrypoint.sh"]
