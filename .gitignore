@@ -27,9 +27,7 @@ share/python-wheels/
 MANIFEST
 
 # Migraciones
-migrations/
 !migrations/*.py
-migrations/versions/
 
 
 # PyInstaller
