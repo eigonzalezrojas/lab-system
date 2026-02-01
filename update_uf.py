@@ -7,12 +7,16 @@ Uso:
     python update_uf.py <valor>                    # Actualiza con fecha de hoy
     python update_uf.py <valor> <fecha>            # Actualiza con fecha específica (YYYY-MM-DD)
     python update_uf.py --info                     # Muestra info del cache
-    python update_uf.py --test                     # Prueba la obtención de UF
+    python update_uf.py --fetch                    # Intenta obtener UF desde API
 
 Ejemplos:
     python update_uf.py 37500.50
     python update_uf.py 37500.50 2026-02-01
     python update_uf.py --info
+    python update_uf.py --fetch
+
+Para ejecutar tests:
+    python tests/test_uf_service.py
 """
 
 import sys
@@ -55,9 +59,9 @@ def show_cache_info():
         print("⚠️  No hay valores en cache")
 
 
-def test_uf_fetch():
-    """Prueba obtener el valor de la UF."""
-    print("\n=== PRUEBA DE OBTENCIÓN DE UF ===\n")
+def fetch_uf_from_api():
+    """Intenta obtener el valor de la UF desde la API."""
+    print("\n=== OBTENER UF DESDE API ===\n")
     print("Intentando obtener valor de UF...")
 
     valor = UFService.obtener_valor_uf()
@@ -109,9 +113,9 @@ def main():
             show_cache_info()
             return
 
-        # --test: probar obtención de UF
-        if '--test' in sys.argv:
-            test_uf_fetch()
+        # --fetch: obtener UF desde API
+        if '--fetch' in sys.argv:
+            fetch_uf_from_api()
             return
 
         # Actualización manual
