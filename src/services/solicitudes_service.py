@@ -3,7 +3,7 @@ from src import db
 from fpdf import FPDF
 from datetime import datetime
 import pytz
-import requests
+from src.services.uf_service import UFService
 
 def get_all_projects():
     return Project.query.all()
@@ -30,34 +30,12 @@ def get_all_nucleos():
 
 
 def obtener_valor_uf():
-    """Obtiene el valor actual de la UF desde la API de mindicador.cl."""
-    try:
-        # Realizar la solicitud a la API
-        response = requests.get('https://mindicador.cl/api/uf', timeout=10)
-
-        if response.status_code == 200:
-            data = response.json()
-
-            # Extraer el valor más reciente de la UF
-            if "serie" in data and len(data["serie"]) > 0:
-                valor_uf = data["serie"][0]["valor"]
-                print(f"Valor actual de la UF: {valor_uf}")
-                return valor_uf
-            else:
-                print("Error: No se encontró la serie de valores de la UF en la respuesta.")
-                return None
-        else:
-            print(f"Error al obtener el valor de la UF: {response.status_code}")
-            return None
-    except requests.exceptions.Timeout:
-        print("Error: La solicitud a la API de mindicador.cl excedió el tiempo de espera.")
-        return None
-    except requests.exceptions.RequestException as e:
-        print(f"Error al realizar la solicitud a la API de mindicador.cl: {e}")
-        return None
-    except Exception as e:
-        print(f"Excepción inesperada: {e}")
-        return None
+    """
+    Obtiene el valor actual de la UF.
+    DEPRECADO: Usa UFService.obtener_valor_uf() directamente.
+    Esta función se mantiene por compatibilidad.
+    """
+    return UFService.obtener_valor_uf()
 
 
 def create_solicitud(data, current_user):
